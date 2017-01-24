@@ -1,5 +1,5 @@
 %set up camera
-
+%hello
 
 %set up color ID function
 
