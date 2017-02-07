@@ -44,6 +44,30 @@ while(1)
     % We get a set of properties for each labeled region.
     stats = regionprops(bw, 'BoundingBox', 'Centroid');
     
+    %---------------------------
+    % Now to track blue objects in real time
+    % we have to subtract the blue component 
+    % from the grayscale image to extract the red components in the image.
+    diff_im_b = imsubtract(data(:,:,3), rgb2gray(data));
+    %Use a median filter to filter out noise
+    diff_im_b = medfilt2(diff_im_b, [3 3]);
+    
+%     figure(5),imshow(diff_im);
+    % Convert the resulting grayscale image into a binary image.
+    diff_im_b = im2bw(diff_im_b,0.10);
+    
+    % Remove all those pixels less than 300px
+    diff_im_b = bwareaopen(diff_im_b,300);
+    
+    % Label all the connected components in the image.
+    bw_b = bwlabel(diff_im_b, 8);
+    
+    % Here we do the image blob analysis.
+    % We get a set of properties for each labeled region.
+    stats = regionprops(bw, 'BoundingBox', 'Centroid');
+    stats_b = regionprops(bw_b, 'BoundingBox', 'Centroid');
+    %---------------------------
+    
     % Display the image
     figure(7),imshow(data)
     
@@ -57,6 +81,16 @@ while(1)
         plot(bc(1),bc(2), '-m+')
         a=text(bc(1)+15,bc(2), strcat('X: ', num2str(round(bc(1))), '    Y: ', num2str(round(bc(2)))));
         set(a, 'FontName', 'Arial', 'FontWeight', 'bold', 'FontSize', 12, 'Color', 'yellow');
+    end
+    
+        %This is a loop to bound the blue objects in a rectangular box.
+    for object = 1:length(stats_b)
+        bb_b = stats_b(object).BoundingBox;
+        bc_b = stats_b(object).Centroid;
+        rectangle('Position',bb_b,'EdgeColor','r','LineWidth',2)
+        plot(bc_b(1),bc_b(2), '-m+')
+        a_b=text(bc_b(1)+15,bc_b(2), strcat('X: ', num2str(round(bc_b(1))), '    Y: ', num2str(round(bc_b(2)))));
+        set(a_b, 'FontName', 'Arial', 'FontWeight', 'bold', 'FontSize', 12, 'Color', 'yellow');
     end
     
     hold off
