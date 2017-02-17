@@ -161,6 +161,7 @@ void loop() {
   rotateVehicle(90,0.8);
   stopVehicle();
   delay(500);
+  exit(0);
   //while (1);
 }
 
