@@ -4,7 +4,7 @@ function [package] = sendData(s,data,address)
 % [package] = sendData(s,data)
 % s is the opened serial port.
 % data should be an array of decimal integers.
-% address (optional) should be a 16-bit hex.
+% address (optional) should be a 16-bit hex. (default: 'FFFF')
 
 %Check inputs
 if(nargin > 3 || nargin < 1)

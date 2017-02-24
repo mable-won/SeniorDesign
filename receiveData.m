@@ -1,6 +1,6 @@
-function [address,data] = receiveData(s,dataLength)
+function [data] = receiveData(s,dataLength)
 % RECEIVEDATA receives an API package sent over the xBee.
-% [address,data] = receiveData(s,dataLength)
+% [data] = receiveData(s,dataLength)
 % s is the opened serial port.
 % dataLength is the expected length of the data, not the length of the
 % package or the length in the second and third bytes of the package.
@@ -10,16 +10,13 @@ function [address,data] = receiveData(s,dataLength)
 % Wait for package
 while (s.BytesAvailable==0)
 end
-package=fread(s,[1,dataLength+9]);
-if dataLength~=package(3)-5
-    disp('Error: Data lengths do not match.');
-    return;
-end
-%extract data from package
+%got a package
 data=zeros(1,dataLength);
+package=fread(s,[1,dataLength+9]);
+%extract data from package
 for i=1:dataLength
     data(i)=package(8+i);
 end
-address=package(6)+256*package(5);
+%address=package(6)+256*package(5);
 end
 
