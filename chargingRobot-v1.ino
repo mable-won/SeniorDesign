@@ -40,10 +40,10 @@
 #define M2PWM 5
 #define M2PH 6
 #define MODE_PIN 7
-#define RED 9
-#define GREEN 11
 
 #include <XBee.h>
+#include <Servo.h>
+Servo servoMain;
 XBee xbee = XBee();
 XBeeResponse response = XBeeResponse();
 // create reusable response objects for responses we expect to handle
@@ -54,14 +54,14 @@ Tx16Request tx = Tx16Request(0x1874, payload, sizeof(payload));
 TxStatusResponse txStatus = TxStatusResponse();
 
 // Read buffer, bufferSize is 2+2*#ofcars
-int bufferSize = 18;
-byte readBuffer[18];
+int bufferSize = 10;
+byte readBuffer[10];
 
 // Global loop counter
 int loopCount = 0;
 
 // Vehicle ID: Change for each vehicle!!
-int carID = 1; //#s 1-8
+int carID = 9; //#s 9-12
 
 // Calibration parameters. For all vehicles, at leftMax + rightMax they
 // should go roughly along a straight line forward at roughly the same speed
@@ -82,49 +82,14 @@ void setup()
   Serial1.begin(57600);
   pinMode(MODE_PIN, OUTPUT);
   digitalWrite(MODE_PIN, HIGH);
+  servoMain.attach(10);
+  openServo();
+
+  // Update these if the directions of the wheels are wrong
   digitalWrite(M1PH, HIGH);
   digitalWrite(M2PH, HIGH);
   xbee.setSerial(Serial1);
-  pinMode(RED, OUTPUT);
-  pinMode(GREEN, OUTPUT);
-  digitalWrite(RED, LOW);
-  digitalWrite(GREEN, LOW);
-  // initialize Timer1
-  noInterrupts();         // disable global interrupts
-  TCCR1A = 0;    // set entire TCCR1A register to 0
-  TCCR1B = 0;    // set entire TCCR1A register to 0
-  // enable Timer1 overflow interrupt:
-  TIMSK1 |= (1 << TOIE1);
-  // Preload TCNT1 with 40535 for 100ms delay
-  //use 15535 for 200ms delay
-  //use 53035 for 50 ms delay
-  TCNT1=40535; //don't forget to also change the value in the ISR
-  // Set prescaling to 64
-  TCCR1B |= (1 << CS10); // Sets bit CS10 in TCCR1B
-  TCCR1B |= (1 << CS11); // Sets bit CS11 in TCCR1B
-  
-  // enable global interrupts:
-  interrupts();
-}
-
-ISR(TIMER1_OVF_vect){
-  //Read voltage
-  int voltage = readVoltage();
-  // Toggle LEDs
-  if (voltage==1023) { //Full-3/4 battery
-    digitalWrite(GREEN, HIGH);
-    digitalWrite(RED, LOW);
-  } else if (voltage>775) { //3/4-half battery
-    digitalWrite(GREEN, !digitalRead(GREEN));
-    digitalWrite(RED, LOW);
-  } else if (voltage>387) { //half-1/4 battery
-    digitalWrite(RED, !digitalRead(RED));
-    digitalWrite(GREEN, LOW);
-  } else { //low to empty battery
-    digitalWrite(RED, HIGH);
-    digitalWrite(GREEN, LOW);
-  }
-  TCNT1=(40535); // reload the timer preload
+  //Serial.println("Starting up...");
 }
 
 // Run the two motors at different thrusts, negative thrusts makes the wheel
@@ -151,10 +116,11 @@ void runMotors(int rightThrust, int leftThrust) {
   analogWrite(M2PWM, abs(leftThrust)*rightMax / 128);
 }
 
+
 void processCommand(byte readBuffer[]) {
   // Parse the command
-  byte lc = readBuffer[carID * 2 - 1];
-  byte rc = readBuffer[carID * 2];
+  byte lc = readBuffer[(carID - 8) * 2 - 1];
+  byte rc = readBuffer[(carID - 8) * 2];
 
   // Parse and send command to motor
   if (hasPreviousCommand == 0 ||
@@ -162,8 +128,8 @@ void processCommand(byte readBuffer[]) {
        (previousLeft != lc || previousRight != rc)
       ))
   {
-    int rightThrust = (rc & 0x7F) * ((rc & 0x80) == 0x80 ? 1 : -1);
-    int leftThrust = (lc & 0x7F) * ((lc & 0x80) == 0x80 ? 1 : -1);
+    int rightThrust = (rc & 0x7F) * ((rc & 0x80) == 0x80 ? -1 : 1);
+    int leftThrust = (lc & 0x7F) * ((lc & 0x80) == 0x80 ? -1 : 1);
     runMotors(rightThrust, leftThrust);
 
     // Save command
@@ -215,14 +181,12 @@ void sendData(int voltage) {
   }
 }
 
-int readVoltage() {
-  float sum1 = 0, sum2 = 0;
-  for (int i = 0; i < 200; i++) {
-    sum1 += analogRead(A2);
-    sum2 += analogRead(A0);
-  } int val1 = int(sum1 / 200 + 0.5);
-  int val2 = int(sum2 / 200 + 0.5);
-  return (val1 - val2);
+void openServo() {
+  servoMain.write(90);
+}
+
+void closeServo() {
+  servoMain.write(30);
 }
 
 void loop()
@@ -252,15 +216,16 @@ void loop()
       }
       //Serial.println();
       // Parse command if it seems to be a good one
-      if (readBuffer[0] == 'C' && readBuffer[bufferSize - 1] == 'M') {
+      if (readBuffer[0] == 'M' && readBuffer[bufferSize - 1] == 'C') {
         loopCount = 0;
         processCommand(readBuffer);
-      } else if (readBuffer[0] == 'V' && readBuffer[bufferSize -1] == '?') {
+      } else if (readBuffer[0] == 'G' && readBuffer[bufferSize -1] == 'R') {
         loopCount = 0;
-        int voltage = readVoltage();
-        //Serial.println(voltage);
-        delay(25 * carID);
-        sendData(voltage);
+        if (readBuffer[carID-8]==1) {
+          openServo();
+        } else {
+          closeServo(); 
+        }
         // Otherwise, reset and flush buffer
       } else {
         resetVehicle();
