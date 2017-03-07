@@ -3,12 +3,6 @@ close all
 clear all
 clc
 
-%2/26/2017
-%1-get rid of all the noise
-%2-find connected components areas
-%3-calibrate for each number
-%4-find centroid of cc
-
 % Capture the video frames using the videoinput function
 
 % You have to replace the resolution & your installed adaptor name.
@@ -28,26 +22,6 @@ while(1)
     
     % Get the snapshot of the current frame
     data = snapshot(vid);
-%%%%%%%%%%%%%%%%%%%%%%%%5  
-    % threshold 
-    t = 200;
-    % find values below
-    ind_below = (data < t);
-    % find values above
-    ind_above = (data >= t);
-    % set values below to black
-    data(ind_below) = 0;
-    % set values above to white
-    data(ind_above) = 255;
-%%%%%%%%%%%%%%%%%%%%%%%
-
-    B=im2bw(data);
-    stats=regionprops('table',B,'Area')
-    imshow(B);
-    
-    
-    %txtResults=ocr(data);
-    %recognizedText=txtResults.Text;
     
     % Now to track red objects in real time
     % we have to subtract the red component 

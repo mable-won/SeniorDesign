@@ -4,9 +4,10 @@ clear all
 clc
 
 %2/26/2017
-/*
-fjkdjf
-*/
+%1-get rid of all the noise
+%2-find connected components areas
+%3-calibrate for each number
+%4-find centroid of cc
 
 % Capture the video frames using the videoinput function
 
@@ -43,7 +44,7 @@ while(1)
     B=im2bw(data);
     stats=regionprops('table',B,'Area')
     imshow(B);
-    
+  
     
     %txtResults=ocr(data);
     %recognizedText=txtResults.Text;
