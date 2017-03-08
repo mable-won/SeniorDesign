@@ -18,12 +18,14 @@ hold off
     rectangle('Position',bboxes(i,:),'EdgeColor','r')
  end
  
- ch = regionprops(BW,'ConvexHull');
+ ch = regionprops(BW,'ConvexHull','centroid');
 
- outgoing = int16.empty(numel(ch),0)
- 
+ outgoing=zeros(numel(ch),3);
+ %outVector = zeros(1,numel(ch)*3);
+  
  for i = 1:numel(ch)
      data = ch(i).ConvexHull;
+     cent=ch(i).Centroid;
     line(data(:,1),data(:,2),'color','g')
     % this convex hull outlines one dice.  You need to run bwconncomp(BW)
     % inside this convex hull, count the dots , and write text
@@ -37,9 +39,12 @@ hold off
     bw3=bwconncomp(roip2_inv);
     numDots = bw3.NumObjects-1;
     text(mean(data(:,1)),mean(data(:,2)),num2str(numDots),'color','b','fontsize',16);   
-    
+    outgoing(i,1)=numDots;
+    outgoing(i,2)=cent(1);
+    outgoing(i,3)=cent(2);
  end
-
+ 
+outVector=reshape(outgoing.',1,[]);
  
 
  
