@@ -117,8 +117,8 @@ while (distanceToGoal > goalRadius)
         Goal = [finalX,finalY];
         plot(Goal(1),Goal(2),'rx');
     end
-    distanceToGoal = norm(CurrentPose(1:2) - Goal); % this is necessary
-    waitfor(controlRate); %not sure. might be necessary
+    distanceToGoal = norm(CurrentPose(1:2) - Goal);
+    waitfor(controlRate);
     
     
     
