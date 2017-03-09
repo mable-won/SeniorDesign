@@ -1,14 +1,16 @@
-clear 
-clc
-i = 1;
-%This is the Random Walk with Drift Model
+%% This is the Random Walk with Drift Model
 colorMap = hsv(8); % just to make the 8 paths have different colors in the graph
-rad = 0.5; % for collision 
-randwalk=[0,10; 0,20; 0,30; 0,40; 0,50; 0,60; 0,70; 0,80]; %8 sensor nodes starting coordinate is at random locations between [0 10] on all directions
-delay=0.8; %delay in loop time in s (as a float value)
-step=2;
-times=15; %loop iterations
-%preallocation
+%Tunable Variables
+rad = 1.0; % for collision in cm
+delay=1.0; %delay in loop time in s (as a float value)
+step=5; %in cm
+times=10; %loop iterations
+length=100; %x-direction in cm
+width=100; %y-direction in cm
+%sensor nodes starting coordinates spaced out along left side of the arena
+randwalk=width/8*[0,0.5; 0,1.5; 0,2.5; 0,3.5; 0,4.5; 0,5.5; 0,6.5; 0,7.5];
+
+%% Preallocation
 drift=zeros(8,2);
 line=zeros(8,1);
 randwalk_new=zeros(8,2);
@@ -26,7 +28,8 @@ volt_package=zeros(1,10); volt_package(1)=86; volt_package(10)=63;
 %open Serial port
 s=setupSerial('COM16');
 
-%keep commented until all cars in use
+%% Poll sensor nodes for voltage, sort, then send to coordinator 2
+% note: keep commented until all cars in use
 %[~]=sendData(s,send_package);
 %for car=1:8
 %    [~,packages(car,:)]=receiveData(s,2);
@@ -38,9 +41,10 @@ s=setupSerial('COM16');
 %end
 %[~]=sendData(s,volt_package,'000D'); %send to COORDINATOR 2
 
-% for each time step, a new random walk path will be generated for all 8
+%% For each time step, a new random walk path will be generated for all 8
 % sensor nodes
-for t=1:times
+t=1;
+while (get(hObject,'Value'))
     if t==1
         for k=1:8
         randwalk_new(k,:)=randwalk(k,:)+[step 0];
@@ -62,17 +66,24 @@ for t=1:times
         else
             randwalk_new(k,:) = randwalk(k,:) + [0 -step];
         end
-        %this code is to ensure that randwalk does not go beyond 250 units
-        %in either direction
-        if randwalk_new(k,1)>250
+        %this code is to ensure that randwalk does not go beyond boundaries
+        %in any direction
+        if randwalk_new(k,1)>length
             randwalk_new(k,:) = randwalk_new(k,:) + [-step 0];
         end
-        if randwalk_new(k,2)>250
+        if randwalk_new(k,1)<0
+            randwalk_new(k,:) = randwalk_new(k,:) + [step 0];    
+        end
+        if randwalk_new(k,2)>width
             randwalk_new(k,:) = randwalk_new(k,:) + [0 -step];
+        end
+        if randwalk_new(k,2)<0
+            randwalk_new(k,:) = randwalk_new(k,:) + [0 step];
         end
     end
     
     % finding collisions algorithm. still needs work
+    %i=1;
     %d=pdist2(randwalk_new,randwalk_new);
     %d(d==0) = 100; %make diagonal huge
     %[ix,iy] = find(d<rad);%repmat(rad,1,numel(ix))
@@ -83,49 +94,40 @@ for t=1:times
     %    viscircles(randwalk_new(ix,:),repmat(rad,numel(ix),1),'Color','k')
     %end
     end
-    %subplot(1,2,1);
     hold on
     set(gcf, 'units','normalized','outerposition',[0 0 1 1]);
     grid on
     title('Random Walk with Drift model for Sensor Nodes', 'FontSize', 15);
-    xlabel('X distance', 'FontSize', 15);
-    ylabel('Y distance', 'FontSize', 15);
+    xlabel('X distance', 'FontSize', 10);
+    ylabel('Y distance', 'FontSize', 10);
+    axis([0,length,0,width]);
     
     for p=1:8
         line(p)=plot([randwalk(p,1) randwalk_new(p,1)],[randwalk(p,2) randwalk_new(p,2)],'-o','Color',colorMap(p,:),'LineWidth', 4); 
-        %line(p)=scatter([randwalk(p,1) randwalk_new(p,1)],[randwalk(p,2) randwalk_new(p,2)],20,colorMap(p,:),'fill');   
     end
     drawnow
-    %subplot(1,2,2);
-    %hold on
-    %set(gcf, 'units','normalized','outerposition',[0 0 1 1]);
-    %grid on
-    %title('Random Walk with Drift model for Cars 1&7', 'FontSize', 15);
-    %xlabel('X distance', 'FontSize', 15);
-    %ylabel('Y distance', 'FontSize', 15);
-    %line(1)=plot([randwalk(1,1) randwalk_new(1,1)],[randwalk(1,2) randwalk_new(1,2)],'-o','Color',colorMap(1,:),'LineWidth', 4);
-    %line(7)=plot([randwalk(7,1) randwalk_new(7,1)],[randwalk(7,2) randwalk_new(7,2)],'-o','Color',colorMap(7,:),'LineWidth', 4); 
-    %drawnow
     if t==1 %initial case: no prev orientation values, so move everything straight
         mov_package=[67 100 100 100 100 100 100 100 100 100 100 100 100 100 100 100 100 77];
         [~]=sendData(s,mov_package);
-        pause(0.357143); %move 5 cm at 14cm/s
+        pause(step/14);
+        [~]=sendData(s,stop_package);
         [~]=sendData(s,stop_package);
         pause(delay);
     else
     for car=1:8
         %calculate original orientation
-        if randwalk_prev(car,1)==randwalk(car,1)
-            if randwalk_prev(car,2)==randwalk(car,2)+step
-                orientation(car,1)=90;%up
-            else
-                orientation(car,1)=-90; %down
-            end
-        elseif randwalk_prev(car,1)==randwalk(car,1)+step
-            orientation(car,1)=0; %right
-        else
-            orientation(car,1)=180; %left
-        end
+        orientation(car,1)=180; % orientation always ends at 0
+        %if randwalk_prev(car,1)==randwalk(car,1)
+        %    if randwalk_prev(car,2)==randwalk(car,2)+step
+        %        orientation(car,1)=90;%up
+        %    else
+        %        orientation(car,1)=-90; %down
+        %    end
+        %elseif randwalk_prev(car,1)==randwalk(car,1)+step
+        %    orientation(car,1)=0; %right
+        %else
+        %   orientation(car,1)=180; %left
+        %end
         %calculate final orientation
         if randwalk(car,1)==randwalk_new(car,1)
             if randwalk(car,2)==randwalk_new(car,2)+step
@@ -150,12 +152,12 @@ for t=1:times
             mov_package(1,car*2)=228;
             mov_package(1,car*2+1)=228;
         elseif orientation_new(car,1)-orientation(car,1)==90||orientation_new(car,1)-orientation(car,1)==-270
-            rot_package(1,car*2)=228; %right turn
+            rot_package(1,car*2)=228; %left turn
             rot_package(1,car*2+1)=100;
             mov_package(1,car*2)=100;
             mov_package(1,car*2+1)=100;
         else
-            rot_package(1,car*2)=100; %left turn
+            rot_package(1,car*2)=100; %right turn
             rot_package(1,car*2+1)=228;
             mov_package(1,car*2)=100;
             mov_package(1,car*2+1)=100;
@@ -170,7 +172,16 @@ for t=1:times
     [~]=sendData(s,stop_package);
     pause(0.020);
     [~]=sendData(s,mov_package);
-    pause(0.357143); %move 5 cm at 14cm/s
+    pause(step/14); %move 5 cm at 14cm/s
+    [~]=sendData(s,stop_package);
+    %reorientation to align at 0
+    for car=2:17 %flip sign bit of nonzero values
+        if rot_package(car)~=0
+            rot_package(car)=bitxor(128,rot_package(car));
+        end
+    end
+    [~]=sendData(s,rot_package);
+    pause(0.2807005); %time for 90 degree turn
     [~]=sendData(s,stop_package);
     [~]=sendData(s,stop_package);
     pause(delay);
@@ -178,8 +189,8 @@ for t=1:times
     %UPDATE the new position
     randwalk_prev=randwalk;
     randwalk=randwalk_new;
+    t=t+1;
 end
 %close port
 fclose(s);
 delete(s);
-
