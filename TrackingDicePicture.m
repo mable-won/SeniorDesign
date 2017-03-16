@@ -5,7 +5,7 @@ BW = im2bw(BW2,0.5);
 BW=bwareaopen(BW,1000);
 figure, imshow(BW);
 
-s = regionprops(BW,'centroid','area');
+s = regionprops(BW,'centroid','area','orientation');
 centroids = cat(1, s.Centroid);
 
 hold on
@@ -18,14 +18,15 @@ hold off
     rectangle('Position',bboxes(i,:),'EdgeColor','r')
  end
  
- ch = regionprops(BW,'ConvexHull','centroid');
+ ch = regionprops(BW,'ConvexHull','centroid','orientation');
 
- outgoing=zeros(numel(ch),3);
+ outgoing=zeros(numel(ch),4);
  %outVector = zeros(1,numel(ch)*3);
   
  for i = 1:numel(ch)
      data = ch(i).ConvexHull;
      cent=ch(i).Centroid;
+     orient=ch(i).Orientation;
     line(data(:,1),data(:,2),'color','g')
     % this convex hull outlines one dice.  You need to run bwconncomp(BW)
     % inside this convex hull, count the dots , and write text
@@ -42,6 +43,8 @@ hold off
     outgoing(i,1)=numDots;
     outgoing(i,2)=cent(1);
     outgoing(i,3)=cent(2);
+    outgoing(i,4)=orient;
+    
  end
  
 outVector=reshape(outgoing.',1,[]);
