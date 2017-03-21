@@ -43,7 +43,7 @@ for i=1:12 %used if camera array does not have robots in numerical order
     end
 end
 finalX = output(i*4-2);
-finalY = output(i*4-3);
+finalY = output(i*4-1);
 Goal = [finalX,finalY];
 %% Other parameters
 wheelDist = 3; %in cm
@@ -56,11 +56,8 @@ distanceToGoal = norm(CurrentLocation - Goal);
 %% Initialize robot simulator
 % Not really necessary as far as implementing in the physical robots
 if simulation
-    mult = 3; %multiplier for lookahead distance
     linVel = vmax;
-    lookaheadDistance = wheelDist*mult; % point where robot goes to next
     chargingRobotRadius = 8; %radius of vehicle
-    
     chargingRobot = ExampleHelperRobotSimulator('emptyMap',2);
     chargingRobot.enableLaser(false);
     chargingRobot.setRobotSize(chargingRobotRadius);
