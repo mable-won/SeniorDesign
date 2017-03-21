@@ -1,27 +1,29 @@
 %% Charging Robot Target Initialization
 %Assign initial targets for each charging robot based on voltage and
-%distance.
+%distance. Uses the global variables outVector and voltList.
 
-
+global outVector;
+global voltList;
+distanceArray=zeros(4,4);
 %% Compute all distances between CRs and 4 lowest voltage SNs
 for carID=9:12
     for carIndex=1:12 %find carID in camera info
-        if output(carIndex*4-3)==carID
+        if outVector(carIndex*4-3)==carID
             break;
         end
     end
-    initX = output(carIndex*4-2);
-    initY = output(carIndex*4-1);
+    initX = outVector(carIndex*4-2);
+    initY = outVector(carIndex*4-1);
     currentLocation = [initX,initY];
     for target=1:4
         targetID=voltList(target*2-1); %find carID of 4 lowest voltage SN
         for targetIndex=1:12 %find targetID in camera info
-            if output(targetIndex*4-3)==targetID
+            if outVector(targetIndex*4-3)==targetID
                 break;
             end
         end
-        finalX = output(targetIndex*4-2);
-        finalY = output(targetIndex*4-1);
+        finalX = outVector(targetIndex*4-2);
+        finalY = outVector(targetIndex*4-1);
         goal = [finalX,finalY];
         distanceArray(carID-8,target) = norm(currentLocation - goal);
     end

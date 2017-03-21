@@ -3,7 +3,7 @@ function [ target ] = CRAssignment( carID, prevTarget )
 %priority given by the global variable voltList.
 %   The carID is the identifier of the charging robot, ie 9-12; prevTarget
 %   is the identifier of the previous target sensor node; target is the new
-%   target sensor node identifier.
+%   target sensor node identifier. Uses the global variable voltList.
 
 global voltList;
 list=voltList;

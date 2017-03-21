@@ -1,7 +1,7 @@
 function [ vLeft, vRight ] = CRTracking( carID, target, simulation )
 %CRTracking computes the wheel thrusts required for a particular car to
 %track a target robot.
-%   Assuming camera information is a global variable called output; carID 
+%   Assuming camera information is a global variable called outVector; carID 
 %   is the number for a charging robot, ie 9 to 12; target contains the 
 %   carID of the target; and simulation is a optional boolean stating 
 %   whether the simulation is requested.
@@ -17,7 +17,7 @@ elseif nargin == 2
     simulation=0;
 end
 %% Charging Robot
-global output;
+global outVector;
 for i=1:12 %used if camera array does not have robots in numerical order
     if output(i*4-3)==carID
         break;
@@ -27,14 +27,14 @@ for i=1:12 %used if camera array does not have robots in numerical order
         return;
     end
 end
-initX = output(i*4-2);
-initY = output(i*4-1);
-Theta = output(i*4);
+initX = outVector(i*4-2);
+initY = outVector(i*4-1);
+Theta = outVector(i*4);
 CurrentLocation = [initX,initY];
 CurrentPose = [CurrentLocation Theta];
 %% Sensor Node
 for i=1:12 %used if camera array does not have robots in numerical order
-    if output(i*4-3)==target
+    if outVector(i*4-3)==target
         break;
     elseif i==12
         vLeft=0; vRight=0;
@@ -42,8 +42,8 @@ for i=1:12 %used if camera array does not have robots in numerical order
         return;
     end
 end
-finalX = output(i*4-2);
-finalY = output(i*4-1);
+finalX = outVector(i*4-2);
+finalY = outVector(i*4-1);
 Goal = [finalX,finalY];
 %% Other parameters
 wheelDist = 3; %in cm
