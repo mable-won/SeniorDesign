@@ -119,7 +119,7 @@ else
     if simulation
         drive(chargingRobot, linVel, angVel);
         plot(Goal(1),Goal(2),'rx');
-        distanceToGoal = norm(CurrentPose(1:2) - Goal);
+        distanceToGoal = norm(CurrentPose(1:2) - Goal); %#ok<NASGU>
         waitfor(controlRate);
     end
 end

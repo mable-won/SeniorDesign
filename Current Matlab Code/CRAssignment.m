@@ -12,7 +12,7 @@ for index=1:8
     if list(index*2-1)==prevTarget
         break;
     elseif index==8
-        target=0;
+        target=prevTarget;
         disp('Error: Previous target not found.');
         return;
     end
@@ -26,7 +26,7 @@ for index=1:8
     if list(index*2)==0
         break;
     elseif index==8
-        target=0;
+        target=prevTarget;
         disp('Error: No unassigned sensor nodes.');
         return;
     end

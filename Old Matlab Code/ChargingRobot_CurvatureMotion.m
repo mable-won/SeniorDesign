@@ -23,7 +23,7 @@ mult = 2;
 goalRadius = 0.1;
 throttle = 3;
 slowdown = 0.4;
-vmax = throttle*slowdown
+vmax = throttle*slowdown;
 distanceToGoal = norm(CurrentLocation - Goal);
 linVel = vmax;
 lookaheadDistance = wheelDist*mult; % point where robot goes to next
@@ -76,7 +76,7 @@ while (distanceToGoal > goalRadius)
         if tx > 0
             vLeft = vmax;
             vRight = vmax*(r - wheelDist/2)/(r + wheelDist/2);
-            angVel = (vRight - vLeft) / wheelDist
+            angVel = (vRight - vLeft) / wheelDist;
         else
             vLeft = vmax*(r - wheelDist/2)/(r + wheelDist/2);
             vRight = vmax;
@@ -123,5 +123,5 @@ while (distanceToGoal > goalRadius)
     
     
 end
-elapsedTime = toc
+elapsedTime = toc;
 
