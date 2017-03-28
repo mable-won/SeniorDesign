@@ -59,18 +59,18 @@ if simulation
     rad = 3;
     mag = 5;
     hold on
-    xlim([-5 60])
-    ylim([-5 60])
+    xlim([-5 60]) %length of arena
+    ylim([-5 60]) %width of arena
     angs = 0:pi/10:2*pi;
     x = CurrentPose(1) + rad*cos(angs);
     y = CurrentPose(2) + rad*sin(angs);
-    circ(sim) = plot(x,y,'b');
+    circ = plot(x,y,'b');
     angx1 = [CurrentPose(1), CurrentPose(1)+mag*cos(CurrentPose(3)+ pi + pi/8)];
     angy1 = [CurrentPose(2), CurrentPose(2)+mag*sin(CurrentPose(3)+ pi + pi/8)];
     angx2 = [CurrentPose(1), CurrentPose(1)+mag*cos(CurrentPose(3)+ pi - pi/8)];
     angy2 = [CurrentPose(2), CurrentPose(2)+mag*sin(CurrentPose(3)+ pi - pi/8)]; 
-    ang1(sim) = plot(angx1,angy1,'r');
-    ang2(sim) = plot(angx2,angy2,'r');
+    ang1 = plot(angx1,angy1,'r');
+    ang2 = plot(angx2,angy2,'r');
     plot(CurrentPose(1),CurrentPose(2),'-og','LineWidth',2);
     pause(1);
 end
