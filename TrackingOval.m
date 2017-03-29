@@ -67,6 +67,16 @@ plot(centroids(:,1),centroids(:,2), 'b*')
 
  plot(directionPoint(:,1),directionPoint(:,2), 'r*');
  
+ Orient=zeros(numel(ch),i);
+ %---calculate orientation
+ for i = 1:numel(ch)
+     Xdiff= directionPoint(i,1)-ch(i).Centroid(1);
+     Ydiff=ch(i).Centroid(2)-directionPoint(i,2);
+     Orient(i)=mod(atan2(Ydiff,Xdiff)*180/pi,360);
+
+ end
+ 
+ 
  outgoing=zeros(numel(ch),4);
  %outVector = zeros(1,numel(ch)*3);
   
@@ -95,25 +105,7 @@ plot(centroids(:,1),centroids(:,2), 'b*')
     %%%%%%%%%%%%%%%%%%%%%
 
  end
- 
-%  %assign robot->node
-%  %find center point(CP) of the two centroids 
-%  X2=outgoing(1,2);
-%  Y2=outgoing(1,3);
-%  X5=outgoing(2,2);
-%  Y5=outgoing(2,3);
-%  CPX25=(X2+X5)/2;
-%  CPY25=(Y2+Y5)/2;
-%  CP25=[CPX25,CPY25]; %CP of robots 2 & 5
-%  plot(CPX25,CPY25, 'w*');
-%  plot([X2,CPX25],[Y2,CPY25],'w');
-%  %calculate angle between each centroid and CP
-% 
-%  diffYCP25 = CPY25-Y2;
-%  diffXCP25 = CPX25-X2;
-%  angle25=atan2(diffYCP25,diffXCP25)*180;
-%  
-%  
+
 %  %compare that angle with the robot angle
 %  %rotate robot CW until the angles are the same +- some error
  
