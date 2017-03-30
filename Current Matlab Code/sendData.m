@@ -1,10 +1,38 @@
 function [package] = sendData(s,data,address)
-% sendData packages the data and transmits the API package over the xBee.
-% [package] = sendData(s,data,address)
-% [package] = sendData(s,data)
-% s is the opened serial port.
-% data should be an array of decimal integers.
-% address (optional) should be a 16-bit hex. (default: 'FFFF')
+% SENDDATA Send Serial Data
+%
+% [PACKAGE] = sendData(S,DATA,ADDRESS) packages the data and transmits the
+% API package over the xBee.
+% S is the opened serial port.
+% DATA should be an array of positive decimal integers.
+% ADDRESS (optional) should be a 16-bit hex. (default: '0xFFFF' for
+% broadcast)
+%
+% Examples
+%
+% Example 1: Hello World
+% [s] = setupSerial('COM12');
+% [~] = sendData(s,'Hello, World!','000D');
+% fclose(s);
+%
+% Example 2: SN Movement (forward, stop, forward, right, forward, stop,
+% forward, left)
+% data = [67 100 100 0 0 100 100 100 228 100 100 0 0 100 100 228 100 77];
+% [~] = sendData(s,data);
+%
+% Example 3: SN Voltage Request (data must be exactly as below)
+% data = [86 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 63];
+% [~] = sendData(s,data);
+%
+% Example 4: CR Movement (forward, stop, left, right)
+% data = [77 100 100 0 0 228 100 100 228 67];
+% [~] = sendData(s,data);
+%
+% Example 5: CR Gripper (closed, closed, open, closed)
+% data = [71 1 0 1 0 0 0 1 0 82];
+% [~] = sendData(s,data);
+%
+% version 1.0 by R. Dunn at the University of Houston on 3/28/17
 
 %Check inputs
 if(nargin > 3 || nargin < 1)

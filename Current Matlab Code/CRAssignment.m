@@ -1,13 +1,42 @@
 function [ target ] = CRAssignment( carID, prevTarget )
-%CRAssignment assigns a target to a robot to track based on an order of
-%priority given by the global variable voltList.
-%   The carID is the identifier of the charging robot, ie 9-12; prevTarget
-%   is the identifier of the previous target sensor node; target is the new
-%   target sensor node identifier. Uses the global variable voltList.
+% CRASSIGNMENT Charging Robot Assignment
+%
+% [ TARGET ] = CRAssignment( CARID, PREVTARGET ) returns a target carID in
+% TARGET to a charging robot given its CARID and PREVTARGET based on an
+% order of priority given by the global variable voltList. This function
+% also alters voltList. Note that prevTarget is optional.
+%
+% Example:
+%
+% global voltList;
+% voltList = [1 9 2 10 3 11 4 12 5 0 6 0 7 0 8 0];
+% for carID = 9:12 %for every charging robot
+%     for targetID = 1:8 %search for prevTarget in voltList
+%        if voltList(targetID * 2) == carID
+%            break;
+%        end
+%     end
+%     prevTarget = voltList(targetID * 2 - 1);
+%     target = CRAssignment(carID,prevTarget);
+% end
+% disp(voltList);
+%
+%
+% version 1.1 by R. Dunn at the University of Houston on 3/30/17
 
+
+%% Move previous target to end of voltList
 global voltList;
 list=voltList;
-%% Move previous target to end of voltList
+if nargin==1
+    for i = 1:8 %find prevTarget
+        if voltList(i*2) == carID 
+            break;
+        end
+    end
+    prevTarget = voltList(i*2-1);
+end
+
 for index=1:8
     if list(index*2-1)==prevTarget
         break;

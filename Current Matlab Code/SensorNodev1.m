@@ -1,6 +1,20 @@
-%% This is the Random Walk with Drift Model
+% SENSORNODE Sensor Node Code
+%
+% SensorNode computes and graphs the movements of 8 vehicles or sensor
+% nodes based on a random walk model with drift. This code also sends the
+% commands to the vehicles.
+% Note: Do not run this code directly. Run the SNGUI.m file instead. With
+% the GUI, you can start or stop the loop at any time, but DO NOT CLOSE THE
+% GUI WITHOUT STOPPING THE SIMULATION. Doing so does not close the serial
+% port and MATLAB will always complain that the serial port is being used
+% by another application. If this happens, restart MATLAB and reset your
+% serial port, and the problem should go away.
+%
+% version 1.0 by M.C. Lalata and R. Dunn at the University of Houston on
+% 3/28/17
+
 colorMap = hsv(8); % just to make the 8 paths have different colors in the graph
-%Tunable Variables
+%% Tunable Variables
 rad = 1.0; % for collision in cm
 delay=1.0; %delay in loop time in s (as a float value)
 step=5; %in cm
@@ -32,7 +46,7 @@ s=setupSerial('COM16');
 % note: keep commented until all cars in use
 %[~]=sendData(s,send_package);
 %for car=1:8
-%    [~,packages(car,:)]=receiveData(s,2);
+%    [packages(car,:)]=receiveData(s,2);
 %    voltages(car,1)=bitshift(packages(car,1),8)+packages(car,2);
 %end
 %[~,index]=sort(voltages);
