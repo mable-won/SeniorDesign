@@ -111,7 +111,7 @@ if simulation
     ang1 = plot(angx1,angy1,'r');
     ang2 = plot(angx2,angy2,'r');
     plot(CurrentPose(1),CurrentPose(2),'-og','LineWidth',2);
-pause(1);
+    pause(1);
 end
 %% Alignment and Attachment Algorithm
 if (distanceToGoal > goalRadius) 
