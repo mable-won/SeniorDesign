@@ -83,7 +83,7 @@ plot(centroids(:,1),centroids(:,2), 'b*')
  for i = 1:numel(ch)
      data = ch(i).ConvexHull;
      cent=ch(i).Centroid;
-     orient=ch(i).Orientation;
+     orient=Orient(i);
     line(data(:,1),data(:,2),'color','g')
     roip=roipoly(BW, data(:,1),data(:,2));
     roip2=roip&BW;
