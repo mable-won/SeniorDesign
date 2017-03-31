@@ -7,7 +7,7 @@ function [t] = createCRTimer(carID)
 %
 % Examples
 %
-% Example 1: Timer
+% Example 1: Creating a timer
 % t1=createCRTimer(9);
 % start(t1);
 % %timer will automatically execute finishCRTimer followed by stopCRTimer
@@ -23,7 +23,7 @@ function [t] = createCRTimer(carID)
 % get(t1,'Running');
 % %ans = 'off' or 'on'
 %
-% version 1.0 by R. Dunn at the University of Houston on 3/30/17
+% version 1.1 by R. Dunn at the University of Houston on 3/31/17
 
 t=timer;
 t.ExecutionMode = 'singleShot';
@@ -31,25 +31,26 @@ t.UserData = carID;
 t.StartDelay = 60; %time in seconds
 t.BusyMode = 'queue';
 t.TimerFcn = @finishCRTimer;
-t.StopFcn = @stopCRTimer;
+%t.StopFcn = @stopCRTimer;
 end
 
 function finishCRTimer(t,~)
 % FINISHCRTIMER Finish Charging Robot Timer
 %
 % finishCRTimer(T,~) is executed for timer T after T.StartDelay seconds.
+
 global grip_package;
 global mov_package;
 grip_package(t.UserData-8) = 1; %open gripper
 mov_package((t.UserData-8)*2) = 228; %move backward until next loop
 mov_package((t.UserData-8)*2+1) = 228;
 [~] = CRAssignment(t.UserData);
-fprintf('Car %d is finished.\n',t.UserData);
 end
 
-function stopCRTimer(t,~)
+%function stopCRTimer(~,~)
 % STOPCRTIMER Stop Charging Robot Timer
 %
 % stopCRTimer(T,~) is executed for timer T after the finishCRTimer executes. 
-delete(t);
-end
+
+%delete(t);
+%end

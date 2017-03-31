@@ -28,8 +28,8 @@ function [package] = sendData(s,data,address)
 % data = [77 100 100 0 0 228 100 100 228 67];
 % [~] = sendData(s,data);
 %
-% Example 5: CR Gripper (closed, closed, open, closed)
-% data = [71 1 0 1 0 0 0 1 0 82];
+% Example 5: CR Gripper (open, closed, open, closed)
+% data = [71 1 0 1 0 0 0 0 0 82];
 % [~] = sendData(s,data);
 %
 % version 1.0 by R. Dunn at the University of Houston on 3/28/17

@@ -1,13 +1,13 @@
-function [ vLeft, vRight ] = CRTracking( carID, target, simulation )
+function [ vLeft, vRight ] = CRTracking( carID, t, simulation ) %#ok<INUSL>
 % CRTRACKING Charging Robot Tracking
 %
-% [ VLEFT, VRIGHT ] = CRTracking( CARID, TARGET, SIMULATION ) returns the
+% [ VLEFT, VRIGHT ] = CRTracking( CARID, T, SIMULATION ) returns the
 % left and right wheel thrusts, VLEFT and VRIGHT, required for a particular
 %  car to track a target robot.
 % Assuming camera information is a global variable called outVector; CARID 
-% is the number for a charging robot, ie 9 to 12; TARGET contains the 
-% carID of the target; and SIMULATION is a optional boolean stating 
-% whether the simulation is requested.
+% is the number for a charging robot, ie 9 to 12; T is the timer associated
+% with CARID, and SIMULATION is an optional boolean stating whether the
+% simulation is requested.
 % CRTracking also assumes the main function contains a loop for all vehicles and a 
 % togglebutton controlled loop around that. Note that wheel thrusts are
 % not sent wirelessly in this function.
@@ -30,33 +30,29 @@ for i=1:12 %define a test outVector
     end
 end
 for carID = 9:12 %for every charging robot
-    for i = 1:8 %find targetID
-        if voltList(i*2)== carID
-            break;
-        end
-    end
-    targetID = voltList(i*2-1);
+    t = createCRTimer(carID);
     % use if you don't want a simulation
-    [vLeft,vRight] = CRTracking(carID, targetID);
+    [vLeft,vRight] = CRTracking(carID, t);
     % use if you want the simulation
-    %[vLeft,vRight] = CRTracking(carID, targetID, 1);
+    %[vLeft,vRight] = CRTracking(carID, t, 1);
     mov_package((carID-8)*2-1) = vLeft;
     mov_package((carID-8)*2) = vRight;
 end
 %}
 %
-% version 1.0 by M.C. Lalata and R. Dunn at the University of Houston on
-% 3/28/17
+% version 1.1 by M.C. Lalata and R. Dunn at the University of Houston on
+% 3/31/17
 %% Check inputs
-if nargin > 3 || nargin < 1
+global outVector;
+global voltList;
+if nargin > 2 || nargin < 1
     disp('Error: Check number of inputs.');
     vRight=0; vLeft=0;
     return;
-elseif nargin == 2
+elseif nargin == 1
     simulation=0;
 end
 %% Charging Robot
-global outVector;
 for i=1:12 %used if camera array does not have robots in numerical order
     if outVector(i*4-3)==carID
         break;
@@ -72,6 +68,12 @@ Theta = outVector(i*4);
 CurrentLocation = [initX,initY];
 CurrentPose = [CurrentLocation Theta];
 %% Sensor Node
+for i = 1:8 %find targetID
+    if voltList(i*2)== carID
+        break;
+    end
+end
+target = voltList(i*2-1);
 for i=1:12 %used if camera array does not have robots in numerical order
     if outVector(i*4-3)==target
         break;
@@ -114,8 +116,10 @@ if simulation
     pause(1);
 end
 %% Alignment and Attachment Algorithm
-if (distanceToGoal > goalRadius) 
+if (distanceToGoal <= goalRadius)
     %eventually, the alignment code will go here, but for now...
+    %remember that after attached,
+    %start(t);
     vLeft=0; vRight=0;
     return;
 else
