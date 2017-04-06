@@ -35,21 +35,21 @@ for carID = 9:12 %for every charging robot
     [vLeft,vRight] = CRTracking(carID, t);
     % use if you want the simulation
     %[vLeft,vRight] = CRTracking(carID, t, 1);
-    mov_package((carID-8)*2-1) = vLeft;
-    mov_package((carID-8)*2) = vRight;
+    mov_package((carID-8)*2) = vLeft;
+    mov_package((carID-8)*2+1) = vRight;
 end
 %}
 %
-% version 1.1 by M.C. Lalata and R. Dunn at the University of Houston on
-% 3/31/17
+% version 1.2 by M.C. Lalata and R. Dunn at the University of Houston on
+% 4/06/17
 %% Check inputs
 global outVector;
 global voltList;
-if nargin > 2 || nargin < 1
+if nargin > 3 || nargin < 1
     disp('Error: Check number of inputs.');
     vRight=0; vLeft=0;
     return;
-elseif nargin == 1
+elseif nargin == 2
     simulation=0;
 end
 %% Charging Robot
@@ -113,7 +113,7 @@ if simulation
     ang1 = plot(angx1,angy1,'r');
     ang2 = plot(angx2,angy2,'r');
     plot(CurrentPose(1),CurrentPose(2),'-og','LineWidth',2);
-    pause(1);
+    %pause(1);
 end
 %% Alignment and Attachment Algorithm
 if (distanceToGoal <= goalRadius)
@@ -136,10 +136,10 @@ else
     elseif abs(tx) < distanceToGoal && ty < 0
         if tx > 0
             vLeft = 1;
-            vRight = bitxor(vmax,128);
+            vRight = -bitxor(vmax,128);
             %angVel = (bitxor(vRight,128) - vLeft) / wheelDist;
         else 
-            vLeft = bitxor(vmax,128);
+            vLeft = -bitxor(vmax,128);
             vRight = 1;
             %angVel = (vRight - bitxor(vLeft,128)) / wheelDist;
         end
@@ -147,20 +147,22 @@ else
         r = distanceToGoal^2 / (2*abs(tx));
         if tx > 0
             vLeft = vmax;
+            dummy = vmax*(r - wheelDist/2)/(r + wheelDist/2);
             if r-wheelDist/2<0
-                vRight = bitxor(vmax*(r - wheelDist/2)/(r + wheelDist/2),128);
+                vRight = -bitxor(round(dummy),128);
                 %angVel = (bitxor(vRight,128) - vLeft) / wheelDist;
             else
-                vRight = vmax*(r - wheelDist/2)/(r + wheelDist/2);
+                vRight = round(dummy);
                 %angVel = (vRight - vLeft) / wheelDist;
             end    
         else
             vRight = vmax;
+            dummy = vmax*(r - wheelDist/2)/(r + wheelDist/2);
             if r-wheelDist/2<0
-                vLeft = bitxor(vmax*(r - wheelDist/2)/(r + wheelDist/2),128);
+                vLeft = -bitxor(round(dummy),128);
                 %angVel = (vRight - bitxor(vLeft,128)) / wheelDist;
             else
-                vLeft = vmax*(r - wheelDist/2)/(r + wheelDist/2);
+                vLeft = round(dummy);
                 %angVel = (vRight - vLeft) / wheelDist;
             end
         end 

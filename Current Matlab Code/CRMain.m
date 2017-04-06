@@ -4,7 +4,7 @@
 % tracking, alignment, attachment, and charging.
 %
 % version 0.1 by R. Dunn, M.C. Lalata, and M. Wan at the University of
-% Houston on 4/3/17
+% Houston on 4/06/17
 
 %% Global Variables
 global voltList;
@@ -22,9 +22,9 @@ s = setupSerial('COM7');
 %computer, then uncomment the code below, which will wait until SNGUI has
 %begun.
 voltList = [1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0];
-%[~,voltPackage]=receiveData(s,10); %voltPackage is array of targets ordered by voltage
-%for i=1:8 %voltList contains the array of sensor nodes and its assigned charging robot
-%    voltList(i*2-1)=voltPackage(i); 
+%[voltPackage] = receiveData(s,10); %voltPackage is array of targets ordered by voltage
+%for i = 1:8 %voltList contains the array of sensor nodes and its assigned charging robot
+%    voltList(i*2-1) = voltPackage(i); 
 %end
 
 % Create timers (doesn't start them yet)
@@ -79,7 +79,7 @@ while (counter < 10) %to be replaced by get(hObject,'Value')
                 end
         end
         mov_package((carID-8)*2) = vLeft;
-        mov_package((carID-8)*2) = vRight;
+        mov_package((carID-8)*2+1) = vRight;
     end
     sendData(s,mov_package);
     sendData(s,grip_package);
