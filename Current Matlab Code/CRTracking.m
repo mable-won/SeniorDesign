@@ -136,10 +136,10 @@ else
     elseif abs(tx) < distanceToGoal && ty < 0
         if tx > 0
             vLeft = 1;
-            vRight = -bitxor(vmax,128);
+            vRight = bitxor(vmax,128);
             %angVel = (bitxor(vRight,128) - vLeft) / wheelDist;
         else 
-            vLeft = -bitxor(vmax,128);
+            vLeft = bitxor(vmax,128);
             vRight = 1;
             %angVel = (vRight - bitxor(vLeft,128)) / wheelDist;
         end
@@ -149,7 +149,7 @@ else
             vLeft = vmax;
             dummy = vmax*(r - wheelDist/2)/(r + wheelDist/2);
             if r-wheelDist/2<0
-                vRight = -bitxor(round(dummy),128);
+                vRight = bitxor(round(dummy),128);
                 %angVel = (bitxor(vRight,128) - vLeft) / wheelDist;
             else
                 vRight = round(dummy);
@@ -159,7 +159,7 @@ else
             vRight = vmax;
             dummy = vmax*(r - wheelDist/2)/(r + wheelDist/2);
             if r-wheelDist/2<0
-                vLeft = -bitxor(round(dummy),128);
+                vLeft = bitxor(round(dummy),128);
                 %angVel = (vRight - bitxor(vLeft,128)) / wheelDist;
             else
                 vLeft = round(dummy);

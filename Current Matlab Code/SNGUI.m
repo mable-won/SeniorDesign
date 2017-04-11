@@ -82,5 +82,8 @@ function togglebutton2_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of togglebutton2
 if get(hObject,'Value')    
     cla reset;
-    SensorNodev1;
+    % use v1 for smaller robots
+    %SensorNodev1;
+    % use v2 for custom robots
+    SensorNodev2;
 end

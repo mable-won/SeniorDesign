@@ -10,7 +10,6 @@
 %% Test for CRTracking
 
 %{
-clc
 global voltList;
 global outVector;
 mov_package = [77 0 0 0 0 0 0 0 0 67];
@@ -28,7 +27,8 @@ for i=1:12 %define a test outVector
     end
 end
 counter = 0;
-while(counter < 50)
+vLeft = 0; vRight = 0;
+while((vLeft~=0 && vRight~=0) || counter==0)
     for carID = 9:12 %for every charging robot
         t = createCRTimer(carID);
         % use if you don't want a simulation
@@ -39,9 +39,9 @@ while(counter < 50)
         mov_package((carID-8)*2+1) = vRight;
         UpdateLocation(vLeft,vRight,carID);
     end
-    counter = counter + 1;
     %disp(mov_package);
     [~] = sendData(s,mov_package);
+    counter = counter + 1;
     pause(0.1);
 end
 [~] = sendData(s,[77 0 0 0 0 0 0 0 0 67]);
@@ -73,20 +73,18 @@ delete(s);
 
 %% SN Test for Movement and Request Voltage
 
-%{
 s = setupSerial('COM5');
 %[voltPackage] = receiveData(s,10); %voltPackage is array of targets ordered by voltage
 %for i = 1:8 %voltList contains the array of sensor nodes and its assigned charging robot
 %    voltList(i*2-1)= voltPackage(i); 
 %end
-p = [67 228 100 228 100 228 100 228 100 228 100 228 100 228 100 228 100 77];
+p = [67 100 100 100 100 100 100 100 228 100 100 100 100 100 100 100 100 77];
 [~] = sendData(s,p);
-pause(0.3);
+pause(0.34);
 p = [67 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 77];
 [~] = sendData(s,p);
-pause(0.02);
-p = [67 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 77];
+%pause(0.02);
 [~] = sendData(s,p); % duplicate stop package in case of packet loss
 fclose(s);
 delete(s);
-%}
+
