@@ -1,8 +1,9 @@
-function [t] = createCRTimer(carID)
+function [t] = createCRTimer(carID,time)
 % CREATECRTIMER Create Charging Robot Timer
 %
-% [T] = createCRTimer(CARID) creates a timer T associated with a given ID
-% of a charging robot, CARID, which is saved under T.UserData.
+% [T] = createCRTimer(CARID, TIME) creates a timer T associated with a
+% given ID of a charging robot, CARID, which is saved under T.UserData.
+% TIME is an optional time in seconds to set on the timer. Default is 60 s.
 % Note that this does not start the timer, but merely sets it.
 %
 % Examples
@@ -23,12 +24,15 @@ function [t] = createCRTimer(carID)
 % get(t1,'Running');
 % %ans = 'off' or 'on'
 %
-% version 1.1 by R. Dunn at the University of Houston on 3/31/17
+% version 1.2 by R. Dunn at the University of Houston on 4/11/17
 
+if nargin == 1
+    time = 60;
+end
 t=timer;
 t.ExecutionMode = 'singleShot';
 t.UserData = carID;
-t.StartDelay = 60; %time in seconds
+t.StartDelay = time; %time in seconds
 t.BusyMode = 'queue';
 t.TimerFcn = @finishCRTimer;
 %t.StopFcn = @stopCRTimer;

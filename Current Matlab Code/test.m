@@ -5,7 +5,7 @@
 % charging robot movement and gripper, and a test for sensor nodes movement
 % and request voltage.
 %
-% version 1.0 by R. Dunn at the University of Houston on 4/06/17
+% version 1.1 by R. Dunn at the University of Houston on 4/12/17
 
 %% Test for CRTracking
 
@@ -55,17 +55,26 @@ delete(s);
 s = setupSerial('COM5');
 counter = 0;
 while(counter < 20)
-    p = [71 0 0 0 0 0 0 0 0 82];
-    [~] = sendData(s,p);
-    p = [77 100 100 100 100 100 100 100 100 67];
-    [~] = sendData(s,p);
-    pause(0.3);
-    p = [77 0 0 0 0 0 0 0 0 67];
-    [~] = sendData(s,p);
-    p = [71 1 1 1 1 0 0 0 0 82];
-    [~] = sendData(s,p);
+    p1 = [71 0 0 0 0 0 0 0 0 82];
+    p2 = [77 100 100 100 100 100 100 100 100 67];
+    time1 = tic;
+    while (toc(time1) < 0.3)
+        [~] = sendData(s,p1);
+        [~] = sendData(s,p2);
+    end
+    p1 = [77 0 0 0 0 0 0 0 0 67];
+    p2 = [71 1 1 1 1 0 0 0 0 82];
+    time2 = tic;
+    while (toc(time2) < 0.2)
+        [~] = sendData(s,p1);
+        [~] = sendData(s,p2);
+    end
     counter = counter + 1;
-    pause(0.2);
+    % Delete all timers from memory.
+    listOfTimers = timerfindall;
+    if ~isempty(listOfTimers)
+        delete(listOfTimers(:));
+    end
 end
 fclose(s);
 delete(s);
@@ -73,18 +82,27 @@ delete(s);
 
 %% SN Test for Movement and Request Voltage
 
+%{
 s = setupSerial('COM5');
 %[voltPackage] = receiveData(s,10); %voltPackage is array of targets ordered by voltage
 %for i = 1:8 %voltList contains the array of sensor nodes and its assigned charging robot
 %    voltList(i*2-1)= voltPackage(i); 
 %end
-p = [67 100 100 100 100 100 100 100 228 100 100 100 100 100 100 100 100 77];
-[~] = sendData(s,p);
-pause(0.34);
+p = [67 100 100 100 100 100 100 100 100 100 100 100 100 100 100 100 100 77];
+time1 = tic;
+while (toc(time1) < 0.34)
+    [~] = sendData(s,p);
+end
 p = [67 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 77];
-[~] = sendData(s,p);
-%pause(0.02);
-[~] = sendData(s,p); % duplicate stop package in case of packet loss
+time2 = tic;
+while (toc(time2) < 0.02)
+    [~] = sendData(s,p);
+end
 fclose(s);
 delete(s);
-
+% Delete all timers from memory.
+listOfTimers = timerfindall;
+if ~isempty(listOfTimers)
+    delete(listOfTimers(:));
+end
+%}
