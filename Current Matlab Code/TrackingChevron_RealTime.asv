@@ -1,4 +1,5 @@
-
+close all
+clc
 
 while(1)
     %---------Setting up webcam--------------%
@@ -45,9 +46,7 @@ while(1)
 
              %----Calculating the orientation of the chevron-----------%
              %Calcuation is made by sampling points on opposite sides of
-             %the centroid along the axis line. From there, the program
-             %chose the sample point that is white. Take tan2 of the white
-             %sample point and the centroid outputs the 360 orientation
+             %the centroid along the 
 
              leftEdge=zeros(numel(ch),2);
              rightEdge=zeros(numel(ch),2);
@@ -68,7 +67,7 @@ while(1)
                  end
              end
              
-             %%------compare color of ends--------------%
+             %%------compare density of ends
              directionPoint=zeros(12,2);
               for i = 1:numel(ch)
                   leftIntY=round(leftEdge(i,2));
@@ -85,17 +84,18 @@ while(1)
              plot(directionPoint(:,1),directionPoint(:,2), 'r*');
 
              Orient=zeros(12,i);
-             %---calculate orientation----------------%
+             %---calculate orientation
              for i = 1:numel(ch)
                  Xdiff= directionPoint(i,1)-ch(i).Centroid(1);
                  Ydiff=ch(i).Centroid(2)-directionPoint(i,2);
                  Orient(i)=mod(atan2(Ydiff,Xdiff)*180/pi,360);
 
              end
-             
+
+
              outgoing=zeros(12,4);
-             
-             %-----------Drawing orientation line and number of dots-----%
+             %outVector = zeros(1,numel(ch)*3);
+
              for i = 1:numel(ch)
                  data = ch(i).ConvexHull;
                  cent=ch(i).Centroid;
@@ -125,6 +125,7 @@ while(1)
             outVector=reshape(outgoing.',1,[]);
 
             hold off
+    %         flushdata(vid);
 
         end
        delete(vid);

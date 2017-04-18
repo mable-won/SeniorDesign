@@ -82,8 +82,8 @@ delete(s);
 
 %% SN Test for Movement and Request Voltage
 
-%{
-s = setupSerial('COM5');
+
+s = setupSerial('COM10');
 %[voltPackage] = receiveData(s,10); %voltPackage is array of targets ordered by voltage
 %for i = 1:8 %voltList contains the array of sensor nodes and its assigned charging robot
 %    voltList(i*2-1)= voltPackage(i); 
@@ -105,4 +105,4 @@ listOfTimers = timerfindall;
 if ~isempty(listOfTimers)
     delete(listOfTimers(:));
 end
-%}
+
