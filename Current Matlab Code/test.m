@@ -54,7 +54,7 @@ delete(s);
 %{
 s = setupSerial('COM5');
 counter = 0;
-while(counter < 20)
+while(counter < 5)
     p1 = [71 0 0 0 0 0 0 0 0 82];
     p2 = [77 100 100 100 100 100 100 100 100 67];
     time1 = tic;
@@ -95,7 +95,7 @@ while (toc(time1) < 0.34)
 end
 p = [67 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 77];
 time2 = tic;
-while (toc(time2) < 0.02)
+while (toc(time2) < 0.1)
     [~] = sendData(s,p);
 end
 fclose(s);

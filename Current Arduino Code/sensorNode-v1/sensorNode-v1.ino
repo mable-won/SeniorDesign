@@ -43,6 +43,8 @@
 #define RED 9
 #define GREEN 11
 
+#define SNNumber 8
+
 #include <XBee.h>
 XBee xbee = XBee();
 XBeeResponse response = XBeeResponse();
@@ -54,8 +56,8 @@ Tx16Request tx = Tx16Request(0x1874, payload, sizeof(payload));
 TxStatusResponse txStatus = TxStatusResponse();
 
 // Read buffer, bufferSize is 2+2*#ofcars
-int bufferSize = 18;
-byte readBuffer[18];
+int bufferSize = 2*SNNumber+2;
+byte readBuffer[2*SNNumber+2];
 
 // Global loop counter
 int loopCount = 0;

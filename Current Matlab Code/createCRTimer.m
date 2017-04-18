@@ -24,7 +24,7 @@ function [t] = createCRTimer(carID,time)
 % get(t1,'Running');
 % %ans = 'off' or 'on'
 %
-% version 1.2 by R. Dunn at the University of Houston on 4/11/17
+% version 1.3 by R. Dunn at the University of Houston on 4/18/17
 
 if nargin == 1
     time = 60;
@@ -45,9 +45,10 @@ function finishCRTimer(t,~)
 
 global grip_package;
 global mov_package;
-grip_package(t.UserData-8) = 1; %open gripper
-mov_package((t.UserData-8)*2) = 228; %move backward until next loop
-mov_package((t.UserData-8)*2+1) = 228;
+global SNNumber
+grip_package(t.UserData-SNNumber) = 1; %open gripper
+mov_package((t.UserData-SNNumber)*2) = 228; %move backward until next loop
+mov_package((t.UserData-SNNumber)*2+1) = 228;
 [~] = CRAssignment(t.UserData);
 end
 

@@ -40,11 +40,13 @@ for carID = 9:12 %for every charging robot
 end
 %}
 %
-% version 1.2 by M.C. Lalata and R. Dunn at the University of Houston on
-% 4/06/17
+% version 1.3 by M.C. Lalata and R. Dunn at the University of Houston on
+% 4/18/17
 %% Check inputs
 global outVector;
 global voltList;
+global SNNumber;
+global CRNumber;
 if nargin > 3 || nargin < 1
     disp('Error: Check number of inputs.');
     vRight=0; vLeft=0;
@@ -53,10 +55,10 @@ elseif nargin == 2
     simulation=0;
 end
 %% Charging Robot
-for i=1:12 %used if camera array does not have robots in numerical order
+for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerical order
     if outVector(i*4-3)==carID
         break;
-    elseif i==12
+    elseif i==SNNumber+CRNumber
         vLeft=0; vRight=0;
         disp('Initial data not found.');
         return;
@@ -68,13 +70,13 @@ Theta = outVector(i*4);
 CurrentLocation = [initX,initY];
 CurrentPose = [CurrentLocation Theta];
 %% Sensor Node
-for i = 1:8 %find targetID
+for i = 1:SNNumber %find targetID
     if voltList(i*2)== carID
         break;
     end
 end
 target = voltList(i*2-1);
-for i=1:12 %used if camera array does not have robots in numerical order
+for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerical order
     if outVector(i*4-3)==target
         break;
     elseif i==12

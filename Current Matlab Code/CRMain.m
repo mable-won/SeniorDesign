@@ -3,17 +3,23 @@
 % CRMain controls all charging robot functions, including assignment, 
 % tracking, alignment, attachment, and charging.
 %
-% version 0.1 by R. Dunn, M.C. Lalata, and M. Wan at the University of
-% Houston on 4/06/17
+% version 0.2 by R. Dunn, M.C. Lalata, and M. Wan at the University of
+% Houston on 4/18/17
 
 %% Global Variables
 global voltList;
 global outVector;
 global mov_package;
 global grip_package;
+global SNNumber;
+global CRNumber;
 global collision; %#ok<NUSED>
-%voltList = zeros(16);
-outVector = zeros(48);
+SNNumber = 8;
+CRNumber = 4;
+%voltList = zeros(2*SNNumber);
+outVector = zeros(4*(CRNumber+SNNumber));
+mov_package = zeros(2*CRNumber+2);
+grip_package = zeros(2*CRNumber+2);
 
 %% Initialization
 s = setupSerial('COM7');
@@ -21,9 +27,11 @@ s = setupSerial('COM7');
 %Use this for voltList until ready to coordinate with SNGUI on another
 %computer, then uncomment the code below, which will wait until SNGUI has
 %begun.
-voltList = [1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0];
-%[voltPackage] = receiveData(s,10); %voltPackage is array of targets ordered by voltage
-%for i = 1:8 %voltList contains the array of sensor nodes and its assigned charging robot
+for i = 1:SNNumber
+    voltList(i*2-1) = i;
+end
+%[voltPackage] = receiveData(s,2+2*CRNumber); %voltPackage is array of targets ordered by voltage
+%for i = 1:SNNumber %voltList contains the array of sensor nodes and its assigned charging robot
 %    voltList(i*2-1) = voltPackage(i); 
 %end
 
@@ -41,9 +49,13 @@ CRTargetInit;
 %% Main Loop
 counter = 0; %dummy counter, will be replaced
 while (counter < 10) %to be replaced by get(hObject,'Value')
-    mov_package = [77 0 0 0 0 0 0 0 0 67];
-    grip_package = [71 1 1 1 1 1 1 1 1 82];
-    for carID = 9:12
+    mov_package(1) = 77; mov_package(2*CRNumber+2) = 67;
+    grip_package(1) = 71; grip_package(2*CRNumber+2) = 82;
+    for index = 2:2*CRNumber+1
+        mov_package = 0; %stop
+        grip_package = 1; %open
+    end
+    for carID = SNNumber+1:SNNumber+CRNumber
         switch carID %assign timer
             case 9
                 if strcmp(get(t1,'Running'),'off')
@@ -51,7 +63,7 @@ while (counter < 10) %to be replaced by get(hObject,'Value')
                 else % charging
                     vLeft = 0;
                     vRight = 0; 
-                    grip_package(carID-7) = 0; %close gripper
+                    grip_package(carID-SNNumber+1) = 0; %close gripper
                 end
             case 10
                 if strcmp(get(t2,'Running'),'off')
@@ -59,7 +71,7 @@ while (counter < 10) %to be replaced by get(hObject,'Value')
                 else % charging
                     vLeft = 0;
                     vRight = 0; 
-                    grip_package(carID-7) = 0; %close gripper
+                    grip_package(carID-SNNumber+1) = 0; %close gripper
                 end
             case 11
                 if strcmp(get(t3,'Running'),'off')
@@ -67,7 +79,7 @@ while (counter < 10) %to be replaced by get(hObject,'Value')
                 else % charging
                     vLeft = 0;
                     vRight = 0; 
-                    grip_package(carID-7) = 0; %close gripper
+                    grip_package(carID-SNNumber+1) = 0; %close gripper
                 end
             case 12
                 if strcmp(get(t4,'Running'),'off')
@@ -75,11 +87,11 @@ while (counter < 10) %to be replaced by get(hObject,'Value')
                 else % charging
                     vLeft = 0;
                     vRight = 0; 
-                    grip_package(carID-7) = 0; %close gripper
+                    grip_package(carID-SNNumber+1) = 0; %close gripper
                 end
         end
-        mov_package((carID-8)*2) = vLeft;
-        mov_package((carID-8)*2+1) = vRight;
+        mov_package((carID-SNNumber)*2) = vLeft;
+        mov_package((carID-SNNumber)*2+1) = vRight;
     end
     sendData(s,mov_package);
     sendData(s,grip_package);

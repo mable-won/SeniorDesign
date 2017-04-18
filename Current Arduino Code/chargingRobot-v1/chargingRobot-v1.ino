@@ -41,6 +41,10 @@
 #define M2PH 6
 #define MODE_PIN 7
 
+// Number of charging robots and sensor nodes.
+#define CRNumber 4
+#define SNNumber 8
+
 #include <XBee.h>
 #include <Servo.h>
 Servo servoMain;
@@ -53,15 +57,15 @@ uint8_t payload[] = {0, 0};
 Tx16Request tx = Tx16Request(0x1874, payload, sizeof(payload));
 TxStatusResponse txStatus = TxStatusResponse();
 
+// Vehicle ID: Change for each vehicle!!
+int carID = 9; //#s 9-12
+
 // Read buffer, bufferSize is 2+2*#ofcars
-int bufferSize = 10;
-byte readBuffer[10];
+int bufferSize = 2+2*CRNumber;
+byte readBuffer[2+2*CRNumber];
 
 // Global loop counter
 int loopCount = 0;
-
-// Vehicle ID: Change for each vehicle!!
-int carID = 9; //#s 9-12
 
 // Calibration parameters. For all vehicles, at leftMax + rightMax they
 // should go roughly along a straight line forward at roughly the same speed
@@ -119,8 +123,8 @@ void runMotors(int rightThrust, int leftThrust) {
 
 void processCommand(byte readBuffer[]) {
   // Parse the command
-  byte lc = readBuffer[(carID - 8) * 2 - 1];
-  byte rc = readBuffer[(carID - 8) * 2];
+  byte lc = readBuffer[(carID - SNNumber) * 2 - 1];
+  byte rc = readBuffer[(carID - SNNumber) * 2];
 
   // Parse and send command to motor
   if (hasPreviousCommand == 0 ||
@@ -182,11 +186,11 @@ void sendData(int voltage) {
 }
 
 void openServo() {
-  servoMain.write(90);
+  servoMain.write(80);
 }
 
 void closeServo() {
-  servoMain.write(30);
+  servoMain.write(20);
 }
 
 void loop()
@@ -221,7 +225,7 @@ void loop()
         processCommand(readBuffer);
       } else if (readBuffer[0] == 'G' && readBuffer[bufferSize -1] == 'R') {
         loopCount = 0;
-        if (readBuffer[carID-8]==1) {
+        if (readBuffer[carID-SNNumber]==1) {
           openServo();
         } else {
           closeServo(); 

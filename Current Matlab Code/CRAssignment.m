@@ -22,14 +22,16 @@ function [ target ] = CRAssignment( carID, prevTarget )
 % disp(voltList);
 %
 %
-% version 1.1 by R. Dunn at the University of Houston on 3/30/17
+% version 1.2 by R. Dunn at the University of Houston on 4/18/17
 
 
 %% Move previous target to end of voltList
 global voltList;
+global SNNumber;
+
 list=voltList;
 if nargin==1
-    for i = 1:8 %find prevTarget
+    for i = 1:SNNumber %find prevTarget
         if voltList(i*2) == carID 
             break;
         end
@@ -37,10 +39,10 @@ if nargin==1
     prevTarget = voltList(i*2-1);
 end
 
-for index=1:8
+for index=1:SNNumber
     if list(index*2-1)==prevTarget
         break;
-    elseif index==8
+    elseif index==SNNumber
         target=prevTarget;
         disp('Error: Previous target not found.');
         return;
@@ -48,13 +50,13 @@ for index=1:8
 end
 list(index*2)=[];
 list(index*2-1)=[];
-list(15)=prevTarget;
-list(16)=0;
+list(2*SNNumber-1)=prevTarget;
+list(2*SNNumber)=0;
 %% Assign target
-for index=1:8
+for index=1:SNNumber
     if list(index*2)==0
         break;
-    elseif index==8
+    elseif index==SNNumber
         target=prevTarget;
         disp('Error: No unassigned sensor nodes.');
         return;

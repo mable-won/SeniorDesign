@@ -9,10 +9,13 @@ function UpdateLocation(vLeft, vRight, carID, t)
 % It could be user-defined, but the program also has a default value.
 % wheelDist is the distance between the left and right wheels. 
 %
-% version 1.0 by M.C. Lalata and R. Dunn at the University of Houston on
-% 4/06/17
+% version 1.1 by M.C. Lalata and R. Dunn at the University of Houston on
+% 4/18/17
 
-global outVector
+global outVector;
+global SNNumber;
+global CRNumber;
+
 wheelDist = 5;
 if nargin > 4 || nargin < 3
     disp('Error: Check number of inputs.');
@@ -21,10 +24,10 @@ elseif nargin == 3
     t = 0.1;
 end
 
-for i=1:12 %used if camera array does not have robots in numerical order
+for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerical order
     if outVector(i*4-3)==carID
         break;
-    elseif i==12
+    elseif i==SNNumber+CRNumber
         disp('Initial data not found.');
         return;
     end
