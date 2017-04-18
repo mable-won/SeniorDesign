@@ -1,20 +1,20 @@
 
+function outVector =TrackingChevron_RealTime(CamImage)
 
-while(1)
     %---------Setting up webcam--------------%
-    vid=webcam(1); %connect to webcam
-    samp1 = snapshot(vid); %take a photo
+    %vid=webcam(1); %connect to webcam
+    %samp1 = snapshot(vid); %take a photo
     
-    sampInfo = regionprops(samp1); %find connected components
+    sampInfo = regionprops(CamImage); %find connected components
     
     if (isempty(sampInfo)) %if nothing is seen, take another snapshot
 
-    figure(1),imshow(samp1);
+    figure(1),imshow(CamImage);
 
     else
         %------Filtering image-------------%
-        BW1 = snapshot(vid);
-        BW2=im2bw(BW1,.7); %contrast
+        %BW1 = snapshot(vid);
+        BW2=im2bw(CamImage,.7); %contrast
         BW = bwareaopen(BW2,100); %deleting small images
 
         figure(2),imshow(BW);
@@ -127,7 +127,7 @@ while(1)
             hold off
 
         end
-       delete(vid);
+       %delete(vid);
     end
 end
 
