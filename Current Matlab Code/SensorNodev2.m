@@ -16,7 +16,7 @@
 colorMap = hsv(8); % just to make the 8 paths have different colors in the graph
 %% Tunable Variables
 SNNumber = 8;
-rad = 5.0; % for collision in cm
+rad = 7.0; % for collision in cm
 delay = 1.0; %delay in loop time in s (as a float value)
 step = 5; %in cm
 times = 10; %loop iterations
@@ -41,7 +41,7 @@ send_package=zeros(1,2*SNNumber+2); send_package(1)=86; send_package(SNNumber+2)
 volt_package=zeros(1,SNNumber+2); volt_package(1)=86; volt_package(SNNumber+2)=63;
 
 %open Serial port
-s=setupSerial('COM7');
+s=setupSerial('COM5');
 
 %% Poll sensor nodes for voltage, sort, then send to coordinator 2
 % note: keep commented until all cars in use
@@ -62,7 +62,7 @@ t=1;
 while (get(hObject,'Value'))
     if t==1
         for k=1:SNNumber
-        randwalk_new(k,:)=randwalk(k,:)+[step 0];
+            randwalk_new(k,:) = randwalk(k,:) + [step 0];
         end
     else
         compare=rand(SNNumber,2); % makes 8 random arrays filled with values ranging from 0 to 1
@@ -103,10 +103,10 @@ while (get(hObject,'Value'))
         %d(d==0) = 100; %make diagonal huge
         %[ix,iy] = find(d<rad);%repmat(rad,1,numel(ix))
         %if isempty(ix)== 0
-        %    dist(i,:,:) = randwalk_new(ix,:);
-        %    i = i + 1;
-        %    fprintf('collision is in = %d.\n',randwalk_new(ix,:));
-        %    viscircles(randwalk_new(ix,:),repmat(rad,numel(ix),1),'Color','k')
+            %dist(i,:,:) = randwalk_new(ix,:);
+            %i = i + 1;
+            %fprintf('collision is in = %d.\n',randwalk_new(ix,:));
+            %viscircles(randwalk_new(ix,:),repmat(rad,numel(ix),1),'Color','k')
         %end
     end
     hold on
@@ -122,6 +122,7 @@ while (get(hObject,'Value'))
     end
     drawnow
     if t==1 %initial case: no prev orientation values, so move everything straight
+        mov_package(1)='C'; mov_package(2*SNNumber+2)='M';
         for index = 2:2*SNNumber+1
             mov_package(index)=100;
         end

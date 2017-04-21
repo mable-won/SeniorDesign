@@ -50,10 +50,11 @@ circArray = [x' y'];
 circ=plot(x,y,'k'); 
 plot(botCenter(1),botCenter(2),'m*', 'MarkerSize',6);
 %% calculates where charging robot needs to go to in order to have charging robot and sensor node face to face
+dist = zeros(21);
 for cc = 1:21
     dist(cc) = norm(Goal-circArray(cc,:));
 end
-dist = dist'
+dist = dist';
 [minDist,rowInd] = min(dist);
 plot(circArray(rowInd,1),circArray(rowInd,2),'gx','MarkerSize',11);
 Goal = circArray(rowInd,:);
@@ -63,8 +64,7 @@ counter = 1;
 while distanceToGoal > goalRadius && counter < 40 
     if counter == 1
         tic
-    end
-    if counter == 2
+    elseif counter == 2
         elapsedTime = toc
     end
    

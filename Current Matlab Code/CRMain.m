@@ -42,6 +42,9 @@ t3 = createCRTimer(11);
 t4 = createCRTimer(12);
 
 % setup camera
+vid=webcam(1); %connect to webcam
+samp1 = snapshot(vid); %take a photo
+outputArray=TrackingChevron_RealTime(samp1);
 
 % Image processing
 CRTargetInit;
@@ -96,10 +99,13 @@ while (counter < 10) %to be replaced by get(hObject,'Value')
     sendData(s,mov_package);
     sendData(s,grip_package);
     % image processing
+    samp1 = snapshot(vid); %take a photo
+    outputArray=TrackingChevron_RealTime(samp1);
     counter = counter + 1;
 end
 fclose(s);
 fdelete(s);
+delete(vid);
 delete(t1);
 delete(t2);
 delete(t3);

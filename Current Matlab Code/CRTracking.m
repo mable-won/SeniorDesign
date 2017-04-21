@@ -1,7 +1,7 @@
-function [ vLeft, vRight ] = CRTracking( carID, t, simulation ) %#ok<INUSL>
+function [ pLeft, pRight ] = CRTracking( carID, t, simulation ) %#ok<INUSL>
 % CRTRACKING Charging Robot Tracking
 %
-% [ VLEFT, VRIGHT ] = CRTracking( CARID, T, SIMULATION ) returns the
+% [ PLEFT, PRIGHT ] = CRTracking( CARID, T, SIMULATION ) returns the
 % left and right wheel thrusts, VLEFT and VRIGHT, required for a particular
 %  car to track a target robot.
 % Assuming camera information is a global variable called outVector; CARID 
@@ -40,8 +40,8 @@ for carID = 9:12 %for every charging robot
 end
 %}
 %
-% version 1.3 by M.C. Lalata and R. Dunn at the University of Houston on
-% 4/18/17
+% version 1.4 by M.C. Lalata and R. Dunn at the University of Houston on
+% 4/21/17
 %% Check inputs
 global outVector;
 global voltList;
@@ -49,7 +49,7 @@ global SNNumber;
 global CRNumber;
 if nargin > 3 || nargin < 1
     disp('Error: Check number of inputs.');
-    vRight=0; vLeft=0;
+    pRight=0; pLeft=0;
     return;
 elseif nargin == 2
     simulation=0;
@@ -59,7 +59,7 @@ for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerica
     if outVector(i*4-3)==carID
         break;
     elseif i==SNNumber+CRNumber
-        vLeft=0; vRight=0;
+        pLeft=0; pRight=0;
         disp('Initial data not found.');
         return;
     end
@@ -79,8 +79,8 @@ target = voltList(i*2-1);
 for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerical order
     if outVector(i*4-3)==target
         break;
-    elseif i==12
-        vLeft=0; vRight=0;
+    elseif i==SNNumber + CRNumber
+        pLeft=0; pRight=0;
         disp('Target data not found.');
         return;
     end
@@ -122,7 +122,7 @@ if (distanceToGoal <= goalRadius)
     %eventually, the alignment code will go here, but for now...
     %remember that after attached,
     %start(t);
-    vLeft=0; vRight=0;
+    pLeft=0; pRight=0;
     return;
 else
 %% Tracking Algorithm
@@ -132,16 +132,22 @@ else
     tx = dx*cos(theta) - dy*sin(theta);
     ty = dx*sin(theta) + dy*cos(theta);
     if abs(tx) < 0.005*distanceToGoal && ty > 0
-        vRight = vmax;
-        vLeft = vRight;
+        vRight = vmax; %#ok<*NASGU>
+        vLeft = vmax;
+        pRight = vmax;
+        pLeft = vmax;
         %angVel = 0; %angVel is not necessary for the robots. ignore all instances
     elseif abs(tx) < distanceToGoal && ty < 0
         if tx > 0
             vLeft = 1;
-            vRight = bitxor(vmax,128);
+            vRight = -vmax;
+            pLeft = 1;
+            pRight = bitxor(vmax,128);
             %angVel = (bitxor(vRight,128) - vLeft) / wheelDist;
         else 
-            vLeft = bitxor(vmax,128);
+            pLeft = bitxor(vmax,128);
+            pRight = 1;
+            vLeft = -vmax;
             vRight = 1;
             %angVel = (vRight - bitxor(vLeft,128)) / wheelDist;
         end
@@ -149,22 +155,28 @@ else
         r = distanceToGoal^2 / (2*abs(tx));
         if tx > 0
             vLeft = vmax;
+            pLeft = vmax;
             dummy = vmax*(r - wheelDist/2)/(r + wheelDist/2);
-            if r-wheelDist/2<0
-                vRight = bitxor(round(dummy),128);
+            if dummy < 0
+                pRight = bitxor(round(abs(dummy)),128);
+                vRight = round(dummy);
                 %angVel = (bitxor(vRight,128) - vLeft) / wheelDist;
             else
                 vRight = round(dummy);
+                pRight = round(dummy);
                 %angVel = (vRight - vLeft) / wheelDist;
             end    
         else
             vRight = vmax;
+            pRight = vmax;
             dummy = vmax*(r - wheelDist/2)/(r + wheelDist/2);
-            if r-wheelDist/2<0
-                vLeft = bitxor(round(dummy),128);
+            if dummy < 0
+                pLeft = bitxor(round(abs(dummy)),128);
+                vLeft = round(dummy);
                 %angVel = (vRight - bitxor(vLeft,128)) / wheelDist;
             else
                 vLeft = round(dummy);
+                pLeft = round(dummy);
                 %angVel = (vRight - vLeft) / wheelDist;
             end
         end 
