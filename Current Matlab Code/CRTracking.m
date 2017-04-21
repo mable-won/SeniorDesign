@@ -119,11 +119,29 @@ if simulation
 end
 %% Alignment and Attachment Algorithm
 if (distanceToGoal <= goalRadius)
-    %eventually, the alignment code will go here, but for now...
-    %remember that after attached,
-    %start(t);
-    pLeft=0; pRight=0;
-    return;
+    if CurrentPose(3) ~= SN_Pose(3)+pi
+    vLeft = round(-vmax);
+    vRight = round((SN_Pose(3)+pi-CurrentPose(3))*wheelDist/t + vLeft);
+    if vRight>127
+        vRight = 127;
+    end
+    pLeft = bitxor(vmax,128);
+    if vRight < 0
+        pRight = bitxor(round(abs(vRight)),128);
+    else
+        pRight = vRight;
+    end
+else
+    pLeft = 0;
+    pRight = 0;
+    vLeft = 0;
+    vRight = 0;
+end
+mov_package(6) =  pLeft;
+mov_package(7) = pRight;
+[~] = sendData(s,mov_package);
+pLeft=0; pRight=0;
+return;
 else
 %% Tracking Algorithm
     dx = Goal(1) - CurrentPose(1);
