@@ -54,6 +54,15 @@ if nargin > 3 || nargin < 1
 elseif nargin == 2
     simulation=0;
 end
+%% Parameters
+wheelDist = 3; %in cm
+goalRadius = 10; %in cm
+throttle = 127; %max value, do not change
+slowdown = 0.85; %safety factor
+vmax = round(throttle*slowdown); %needs to be an int
+%arena size
+width = 130;
+height = 105;
 %% Charging Robot
 for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerical order
     if outVector(i*4-3)==carID
@@ -62,10 +71,10 @@ for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerica
         pLeft=0; pRight=0;
         disp('Initial data not found.');
         return;
-    end
+    end 
 end
 initX = outVector(i*4-2);
-initY = outVector(i*4-1);
+initY = height - outVector(i*4-1);
 Theta = outVector(i*4);
 CurrentLocation = [initX,initY];
 CurrentPose = [CurrentLocation Theta];
@@ -88,12 +97,7 @@ end
 finalX = outVector(i*4-2);
 finalY = outVector(i*4-1);
 Goal = [finalX,finalY];
-%% Other parameters
-wheelDist = 3; %in cm
-goalRadius = 10; %in cm
-throttle = 127; %max value, do not change
-slowdown = 0.8; %safety factor
-vmax = round(throttle*slowdown); %needs to be an int
+
 distanceToGoal = norm(CurrentLocation - Goal);
 
 %% Initialize robot simulator
