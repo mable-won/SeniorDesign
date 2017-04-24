@@ -43,7 +43,7 @@
 
 // Number of charging robots and sensor nodes.
 #define CRNumber 4
-#define SNNumber 8
+#define SNNumber 5
 
 #include <XBee.h>
 #include <Servo.h>
@@ -58,7 +58,7 @@ Tx16Request tx = Tx16Request(0x1874, payload, sizeof(payload));
 TxStatusResponse txStatus = TxStatusResponse();
 
 // Vehicle ID: Change for each vehicle!!
-int carID = 9; //#s 9-12
+int carID = 9; //#s SNNumber+1 to SNNumber+CRNumber
 
 // Read buffer, bufferSize is 2+2*#ofcars
 int bufferSize = 2+2*CRNumber;

@@ -1,9 +1,9 @@
 global outVector;
-pass = 0;
-counter = 0;
+%pass = 0;
+%counter = 0;
 CRNumber = 4;
 SNNumber = 5;
-while(~pass && counter < 20)
+while(1)
     %---------Setting up webcam--------------%
     vid=webcam(2); %connect to webcam
     vid.Resolution = '1024x768';
@@ -109,7 +109,7 @@ while(~pass && counter < 20)
                 roip2_inv=imcomplement(roip2); 
                 bw3=bwconncomp(roip2_inv,4);
                 numDots = bw3.NumObjects-1;
-                text(mean(data(:,1)),mean(data(:,2)),num2str(numDots),'color','b','fontsize',16);
+                text(mean(data(:,1)),mean(data(:,2)),num2str(numDots),'color','b','fontsize',16);   
                 %convert x&y coordinates from pixels to cm
                 outgoing(i,:)=[numDots,cent(1)/7.877,cent(2)/7.314,orient]; 
 
@@ -127,21 +127,20 @@ while(~pass && counter < 20)
              end
 
             outVector=reshape(outgoing.',1,[]);
-            %-------Check for bijection in outVector---------%
-            for carID = 1:CRNumber+SNNumber
-                for i = 1:CRNumber+SNNumber
-                    if outVector(i*4-3) == carID
-                        break;
-                    elseif i==CRNumber+SNNumber
-                        pass=0;
-                    end
-                end
-            end
+            %for carID = 1:CRNumber+SNNumber
+            %    for i = 1:CRNumber+SNNumber
+            %        if outVector(i*4-3) == carID
+            %           break;
+            %        elseif i==CRNumber+SNNumber
+            %            pass=0;
+            %        end
+            %    end
+            %end
             hold off
     %         flushdata(vid);
 
         end
        delete(vid);
-       counter = counter+1;
+       %counter = counter+1;
     end
 end

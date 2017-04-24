@@ -1,4 +1,4 @@
-function [data] = receiveData(s,dataLength)
+function [package,data] = receiveData(s,dataLength)
 % RECEIVEDATA Receive Data
 % 
 % [DATA] = receiveData(S,DATALENGTH) receives an API package sent over the xBee.
@@ -32,11 +32,13 @@ while (s.BytesAvailable==0)
 end
 %got a package
 data=zeros(1,dataLength);
-package=fread(s,[1,dataLength+9]);
+package=fread(s,dataLength+9);
 %extract data from package
 for i=1:dataLength
     data(i)=package(8+i);
 end
+flushinput(s);
+flushoutput(s);
 %address=package(6)+256*package(5);
 end
 

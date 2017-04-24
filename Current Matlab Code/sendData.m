@@ -16,19 +16,19 @@ function [package] = sendData(s,data,address)
 % fclose(s);
 %
 % Example 2: SN Movement (forward, stop, forward, right, forward, stop,
-% forward, left)
+% forward, left) using 8 SNs
 % data = [67 100 100 0 0 100 100 100 228 100 100 0 0 100 100 228 100 77];
 % [~] = sendData(s,data);
 %
-% Example 3: SN Voltage Request (data must be exactly as below)
+% Example 3: SN Voltage Request using 8 SNs (data must be exactly as below)
 % data = [86 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 63];
 % [~] = sendData(s,data);
 %
-% Example 4: CR Movement (forward, stop, left, right)
+% Example 4: CR Movement (forward, stop, left, right) using 4 CRs
 % data = [77 100 100 0 0 228 100 100 228 67];
 % [~] = sendData(s,data);
 %
-% Example 5: CR Gripper (open, closed, open, closed)
+% Example 5: CR Gripper (open, closed, open, closed) using 4 CRs
 % data = [71 1 0 1 0 0 0 0 0 82];
 % [~] = sendData(s,data);
 %

@@ -8,6 +8,7 @@
 % version 1.1 by R. Dunn at the University of Houston on 4/12/17
 
 %% Test for CRTracking
+% Do not use this test. Will be deleted in a later version.
 
 %{
 global voltList;
@@ -50,11 +51,12 @@ delete(s);
 %}
 
 %% CR Test for Movement and Gripper (aka Pacman)
+% Test for 4 charging robots
 
 %{
 s = setupSerial('COM5');
 counter = 0;
-while(counter < 5)
+while(counter < 2)
     p1 = [71 0 0 0 0 0 0 0 0 82];
     p2 = [77 100 100 100 100 100 100 100 100 67];
     time1 = tic;
@@ -80,20 +82,17 @@ fclose(s);
 delete(s);
 %}
 
-%% SN Test for Movement and Request Voltage
+%% SN Test for Movement
+% Test for 5 sensor nodes
 
-
+%{
 s = setupSerial('COM5');
-%[voltPackage] = receiveData(s,10); %voltPackage is array of targets ordered by voltage
-%for i = 1:8 %voltList contains the array of sensor nodes and its assigned charging robot
-%    voltList(i*2-1)= voltPackage(i); 
-%end
-p = [67 100 100 100 100 100 100 100 100 100 100 100 100 100 100 100 100 77];
+p = [67 100 100 100 100 100 100 100 100 100 100 77];
 time1 = tic;
 while (toc(time1) < 0.34)
     [~] = sendData(s,p);
 end
-p = [67 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 77];
+p = [67 0 0 0 0 0 0 0 0 0 0 77];
 time2 = tic;
 while (toc(time2) < 0.1)
     [~] = sendData(s,p);
@@ -105,4 +104,28 @@ listOfTimers = timerfindall;
 if ~isempty(listOfTimers)
     delete(listOfTimers(:));
 end
+%}
+
+%% SN Test for Voltage Polling
+% This tests the voltage polling. The unreliability of XBee package
+% retrieval prevents this from being a reliable method of obtaining
+% voltages.
+
+%{
+clear
+clc
+s = setupSerial('COM7');
+request_package = [86 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 63];
+timer = tic;
+while toc(timer) < 0.01
+    [~] = sendData(s,request_package);
+end
+[package,data]=receiveData(s,2); 
+% Delete all timers from memory.
+    listOfTimers = timerfindall;
+    if ~isempty(listOfTimers)
+        delete(listOfTimers(:));
+    end
+%     voltages(car,1)=bitshift(packages(car,1),8)+packages(car,2); 
+fclose(s);
 %}

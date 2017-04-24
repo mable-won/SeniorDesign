@@ -43,7 +43,7 @@
 #define RED 9
 #define GREEN 11
 
-#define SNNumber 8
+#define SNNumber 5
 
 #include <XBee.h>
 XBee xbee = XBee();
@@ -63,7 +63,7 @@ byte readBuffer[2*SNNumber+2];
 int loopCount = 0;
 
 // Vehicle ID: Change for each vehicle!!
-int carID = 1; //#s 1-8
+int carID = 5; //#s 1-SNNumber
 
 // Calibration parameters. For all vehicles, at leftMax + rightMax they
 // should go roughly along a straight line forward at roughly the same speed
@@ -164,8 +164,8 @@ void processCommand(byte readBuffer[]) {
        (previousLeft != lc || previousRight != rc)
       ))
   {
-    int rightThrust = (rc & 0x7F) * ((rc & 0x80) == 0x80 ? 1 : -1);
-    int leftThrust = (lc & 0x7F) * ((lc & 0x80) == 0x80 ? 1 : -1);
+    int rightThrust = (rc & 0x7F) * ((rc & 0x80) == 0x80 ? -1 : 1);
+    int leftThrust = (lc & 0x7F) * ((lc & 0x80) == 0x80 ? -1 : 1);
     runMotors(rightThrust, leftThrust);
 
     // Save command

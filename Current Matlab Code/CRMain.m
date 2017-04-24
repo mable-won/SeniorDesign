@@ -13,11 +13,11 @@ global mov_package;
 global grip_package;
 global SNNumber;
 global CRNumber;
-global collision; %#ok<NUSED>
+%global collision; %#ok<NUSED>
 SNNumber = 8;
 CRNumber = 4;
 %voltList = zeros(2*SNNumber);
-outVector = zeros(4*(CRNumber+SNNumber));
+%outVector = zeros(4*(CRNumber+SNNumber)); %#ok<PREALL>
 mov_package = zeros(2*CRNumber+2);
 grip_package = zeros(2*CRNumber+2);
 
@@ -30,7 +30,7 @@ s = setupSerial('COM7');
 for i = 1:SNNumber
     voltList(i*2-1) = i;
 end
-%[voltPackage] = receiveData(s,2+2*CRNumber); %voltPackage is array of targets ordered by voltage
+%[voltPackage] = receiveData(s,SNNumber); %voltPackage is array of targets ordered by voltage
 %for i = 1:SNNumber %voltList contains the array of sensor nodes and its assigned charging robot
 %    voltList(i*2-1) = voltPackage(i); 
 %end
@@ -42,16 +42,16 @@ t3 = createCRTimer(11);
 t4 = createCRTimer(12);
 
 % setup camera
-vid=webcam(1); %connect to webcam
+vid = webcam(2); %connect to webcam
 samp1 = snapshot(vid); %take a photo
-outputArray=TrackingChevron_RealTime(samp1);
+outVector = TrackingChevron_RealTime(samp1);
 
 % Image processing
 CRTargetInit;
 
 %% Main Loop
 counter = 0; %dummy counter, will be replaced
-while (counter < 10) %to be replaced by get(hObject,'Value')
+while (counter < 20) %to be replaced by get(hObject,'Value')
     mov_package(1) = 77; mov_package(2*CRNumber+2) = 67;
     grip_package(1) = 71; grip_package(2*CRNumber+2) = 82;
     for index = 2:2*CRNumber+1
@@ -100,11 +100,12 @@ while (counter < 10) %to be replaced by get(hObject,'Value')
     sendData(s,grip_package);
     % image processing
     samp1 = snapshot(vid); %take a photo
-    outputArray=TrackingChevron_RealTime(samp1);
+    outVector = TrackingChevron_RealTime(samp1);
     counter = counter + 1;
 end
+%}
 fclose(s);
-fdelete(s);
+delete(s);
 delete(vid);
 delete(t1);
 delete(t2);

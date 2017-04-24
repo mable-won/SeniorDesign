@@ -10,20 +10,25 @@
 % by another application. If this happens, restart MATLAB and reset your
 % serial port, and the problem should go away.
 %
-% version 2.2 by M.C. Lalata and R. Dunn at the University of Houston on
-% 4/18/17
+% version 2.3 by M.C. Lalata and R. Dunn at the University of Houston on
+% 4/22/17
 
 colorMap = hsv(8); % just to make the 8 paths have different colors in the graph
 %% Tunable Variables
-SNNumber = 8;
+SNNumber = 5;
 rad = 7.0; % for collision in cm
 delay = 1.0; %delay in loop time in s (as a float value)
 step = 5; %in cm
 times = 10; %loop iterations
-length = 100; %x-direction in cm
-width = 100; %y-direction in cm
+length = 130; %x-direction in cm
+width = 105; %y-direction in cm
+
 %sensor nodes starting coordinates spaced out along left side of the arena
-randwalk = width/8*[0,0.5; 0,1.5; 0,2.5; 0,3.5; 0,4.5; 0,5.5; 0,6.5; 0,7.5];
+randwalk = zeros(SNNumber,2);
+for i = 1:SNNumber
+    randwalk(i,1) = 0; %x-coordinate
+    randwalk(i,2)= width/SNNumber*(i-0.5); %y-coordinate
+end
 
 %% Preallocation
 drift=zeros(SNNumber,2);
@@ -37,14 +42,16 @@ voltages=zeros(SNNumber,1);
 rot_package=zeros(1,2*SNNumber+2);
 mov_package=zeros(1,2*SNNumber+2);
 stop_package=zeros(1,2*SNNumber+2); stop_package(1)=67; stop_package(2*SNNumber+2)=77;
-send_package=zeros(1,2*SNNumber+2); send_package(1)=86; send_package(SNNumber+2)=63;
-volt_package=zeros(1,SNNumber+2); volt_package(1)=86; volt_package(SNNumber+2)=63;
+send_package=zeros(1,2*SNNumber+2); send_package(1)=86; send_package(2*SNNumber+2)=63;
+volt_package=zeros(SNNumber);
 
 %open Serial port
 s=setupSerial('COM5');
 
 %% Poll sensor nodes for voltage, sort, then send to coordinator 2
-% note: keep commented until all cars in use
+% Keep commented until all cars in use. Note: XBee package receival rate
+% notoriously low, meaning they may not transmit their voltage back, and
+% the program will likely either timeout or wait indefinitely.
 %[~]=sendData(s,send_package);
 %for car=1:SNNumber
 %    [packages(car,:)]=receiveData(s,2);
@@ -52,7 +59,7 @@ s=setupSerial('COM5');
 %end
 %[~,index]=sort(voltages);
 %for car=1:SNNumber
-%    volt_package(car+1)=index;
+%    volt_package(car)=index;
 %end
 %[~]=sendData(s,volt_package,'000D'); %send to COORDINATOR 2
 
@@ -161,7 +168,7 @@ while (get(hObject,'Value'))
             else
                 orientation_new(car,1)=180; %left
             end
-            %calculate rotation step & move step (subject to calibration)
+            %calculate rotation step & move step
             if orientation_new(car,1)-orientation(car,1)==0
                 rot_package(1,car*2)=0; %forward
                 rot_package(1,car*2+1)=0;
