@@ -54,6 +54,15 @@ if nargin > 3 || nargin < 1
 elseif nargin == 2
     simulation=0;
 end
+%% Parameters
+wheelDist = 3; %in cm
+goalRadius = 10; %in cm
+throttle = 127; %max value, do not change
+slowdown = 0.85; %safety factor
+vmax = round(throttle*slowdown); %needs to be an int
+%arena size
+width = 130;
+height = 105;
 %% Charging Robot
 for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerical order
     if outVector(i*4-3)==carID
@@ -62,10 +71,10 @@ for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerica
         pLeft=0; pRight=0;
         disp('Initial data not found.');
         return;
-    end
+    end 
 end
 initX = outVector(i*4-2);
-initY = outVector(i*4-1);
+initY = height - outVector(i*4-1);
 Theta = outVector(i*4);
 CurrentLocation = [initX,initY];
 CurrentPose = [CurrentLocation Theta];
@@ -88,12 +97,7 @@ end
 finalX = outVector(i*4-2);
 finalY = outVector(i*4-1);
 Goal = [finalX,finalY];
-%% Other parameters
-wheelDist = 3; %in cm
-goalRadius = 10; %in cm
-throttle = 127; %max value, do not change
-slowdown = 0.8; %safety factor
-vmax = round(throttle*slowdown); %needs to be an int
+
 distanceToGoal = norm(CurrentLocation - Goal);
 
 %% Initialize robot simulator
@@ -119,11 +123,29 @@ if simulation
 end
 %% Alignment and Attachment Algorithm
 if (distanceToGoal <= goalRadius)
-    %eventually, the alignment code will go here, but for now...
-    %remember that after attached,
-    %start(t);
-    pLeft=0; pRight=0;
-    return;
+    if CurrentPose(3) ~= SN_Pose(3)+pi %where is its end statement?
+        vLeft = round(-vmax);
+        vRight = round((SN_Pose(3)+pi-CurrentPose(3))*wheelDist/t + vLeft);
+    if vRight>127
+        vRight = 127;
+    end
+    pLeft = bitxor(vmax,128);
+    if vRight < 0
+        pRight = bitxor(round(abs(vRight)),128);
+    else
+        pRight = vRight;
+    end
+else
+    pLeft = 0;
+    pRight = 0;
+    vLeft = 0;
+    vRight = 0;
+end
+mov_package(6) =  pLeft;
+mov_package(7) = pRight;
+[~] = sendData(s,mov_package);
+pLeft=0; pRight=0;
+return;
 else
 %% Tracking Algorithm
     dx = Goal(1) - CurrentPose(1);

@@ -16,7 +16,7 @@ global CRNumber;
 %global collision; %#ok<NUSED>
 SNNumber = 8;
 CRNumber = 4;
-%voltList = zeros(2*SNNumber);
+voltList = zeros(2*SNNumber);
 %outVector = zeros(4*(CRNumber+SNNumber)); %#ok<PREALL>
 mov_package = zeros(2*CRNumber+2);
 grip_package = zeros(2*CRNumber+2);

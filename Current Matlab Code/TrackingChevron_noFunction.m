@@ -9,6 +9,7 @@ while(1)
     vid.Resolution = '1024x768';
     samp1 = snapshot(vid); %take a photo
     pass = 1;
+
     sampInfo = regionprops(samp1); %find connected components
     
     if (isempty(sampInfo)) %if nothing is seen, take another snapshot
@@ -95,8 +96,8 @@ while(1)
 
              end
 
-
              outgoing=zeros(CRNumber+SNNumber,4);
+
              %outVector = zeros(1,numel(ch)*3);
 
              for i = 1:numel(ch)

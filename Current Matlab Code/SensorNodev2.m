@@ -17,7 +17,7 @@ colorMap = hsv(8); % just to make the 8 paths have different colors in the graph
 %% Tunable Variables
 SNNumber = 5;
 rad = 7.0; % for collision in cm
-delay = 1.0; %delay in loop time in s (as a float value)
+delay = 5.0; %delay in loop time in s (as a float value)
 step = 5; %in cm
 times = 10; %loop iterations
 length = 130; %x-direction in cm
@@ -46,7 +46,7 @@ send_package=zeros(1,2*SNNumber+2); send_package(1)=86; send_package(2*SNNumber+
 volt_package=zeros(SNNumber);
 
 %open Serial port
-s=setupSerial('COM5');
+s=setupSerial('COM10');
 
 %% Poll sensor nodes for voltage, sort, then send to coordinator 2
 % Keep commented until all cars in use. Note: XBee package receival rate
