@@ -16,10 +16,14 @@ global CRNumber;
 %global collision; %#ok<NUSED>
 SNNumber = 8;
 CRNumber = 4;
+
+%Preallocation
 voltList = zeros(2*SNNumber);
 %outVector = zeros(4*(CRNumber+SNNumber)); %#ok<PREALL>
 mov_package = zeros(2*CRNumber+2);
 grip_package = zeros(2*CRNumber+2);
+packages=zeros(SNNumber,2);
+voltages=zeros(SNNumber,1);
 
 %% Initialization
 s = setupSerial('COM7');
@@ -27,12 +31,17 @@ s = setupSerial('COM7');
 %Use this for voltList until ready to coordinate with SNGUI on another
 %computer, then uncomment the code below, which will wait until SNGUI has
 %begun.
-for i = 1:SNNumber
+for i = 1:SNNumber %use if voltage polling doesn't work
     voltList(i*2-1) = i;
 end
-%[voltPackage] = receiveData(s,SNNumber); %voltPackage is array of targets ordered by voltage
-%for i = 1:SNNumber %voltList contains the array of sensor nodes and its assigned charging robot
-%    voltList(i*2-1) = voltPackage(i); 
+
+%for car=1:SNNumber %use if voltage polling works
+%    [packages(car,:)]=receiveData(s,2);
+%    voltages(car,1)=bitshift(packages(car,1),8)+packages(car,2);
+%end
+%[~,index]=sort(voltages);
+%for i=1:SNNumber
+%    voltList(i*2-1)=index;
 %end
 
 % Create timers (doesn't start them yet)
@@ -43,8 +52,8 @@ t4 = createCRTimer(12);
 
 % setup camera
 vid = webcam(2); %connect to webcam
-samp1 = snapshot(vid); %take a photo
-outVector = TrackingChevron_RealTime(samp1);
+vid.Resolution = '1024x768';
+TrackingChevron_RealTime(vid);
 
 % Image processing
 CRTargetInit;
@@ -98,12 +107,10 @@ while (counter < 20) %to be replaced by get(hObject,'Value')
     end
     sendData(s,mov_package);
     sendData(s,grip_package);
-    % image processing
-    samp1 = snapshot(vid); %take a photo
-    outVector = TrackingChevron_RealTime(samp1);
-    counter = counter + 1;
+    TrackingChevron_RealTime(vid); %image processing
+    counter = counter + 1; %counter will be removed in a later version
 end
-%}
+
 fclose(s);
 delete(s);
 delete(vid);

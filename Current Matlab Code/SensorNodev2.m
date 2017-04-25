@@ -37,13 +37,10 @@ randwalk_new=zeros(SNNumber,2);
 randwalk_prev=zeros(SNNumber,2);
 orientation=zeros(SNNumber,1);
 orientation_new=zeros(SNNumber,1);
-packages=zeros(SNNumber,2);
-voltages=zeros(SNNumber,1);
 rot_package=zeros(1,2*SNNumber+2);
 mov_package=zeros(1,2*SNNumber+2);
 stop_package=zeros(1,2*SNNumber+2); stop_package(1)=67; stop_package(2*SNNumber+2)=77;
 send_package=zeros(1,2*SNNumber+2); send_package(1)=86; send_package(2*SNNumber+2)=63;
-volt_package=zeros(SNNumber);
 
 %open Serial port
 s=setupSerial('COM10');
@@ -52,16 +49,17 @@ s=setupSerial('COM10');
 % Keep commented until all cars in use. Note: XBee package receival rate
 % notoriously low, meaning they may not transmit their voltage back, and
 % the program will likely either timeout or wait indefinitely.
-%[~]=sendData(s,send_package);
-%for car=1:SNNumber
-%    [packages(car,:)]=receiveData(s,2);
-%    voltages(car,1)=bitshift(packages(car,1),8)+packages(car,2);
+%for car = 1:SNNumber
+%    timer = tic;
+%    while toc(timer) < 0.01
+%        [~] = sendData(s,request_package,dec2hex(car));
+%    end
+%    % Delete all timers from memory.
+%    listOfTimers = timerfindall;
+%    if ~isempty(listOfTimers)
+%        delete(listOfTimers(:));
+%    end
 %end
-%[~,index]=sort(voltages);
-%for car=1:SNNumber
-%    volt_package(car)=index;
-%end
-%[~]=sendData(s,volt_package,'000D'); %send to COORDINATOR 2
 
 %% For each time step, a new random walk path will be generated for all 8
 % sensor nodes

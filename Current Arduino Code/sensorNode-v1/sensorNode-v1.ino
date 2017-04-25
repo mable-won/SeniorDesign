@@ -52,7 +52,7 @@ XBeeResponse response = XBeeResponse();
 Rx16Response rx16 = Rx16Response();
 Rx64Response rx64 = Rx64Response();
 uint8_t payload[] = {0, 0};
-Tx16Request tx = Tx16Request(0x1874, payload, sizeof(payload));
+Tx16Request tx = Tx16Request(0x000D, payload, sizeof(payload));
 TxStatusResponse txStatus = TxStatusResponse();
 
 // Read buffer, bufferSize is 2+2*#ofcars
@@ -63,7 +63,7 @@ byte readBuffer[2*SNNumber+2];
 int loopCount = 0;
 
 // Vehicle ID: Change for each vehicle!!
-int carID = 5; //#s 1-SNNumber
+int carID = 1; //#s 1-SNNumber
 
 // Calibration parameters. For all vehicles, at leftMax + rightMax they
 // should go roughly along a straight line forward at roughly the same speed

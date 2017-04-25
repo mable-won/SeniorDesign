@@ -85,7 +85,7 @@ delete(s);
 %% SN Test for Movement
 % Test for 5 sensor nodes
 
-%{
+
 s = setupSerial('COM5');
 p = [67 100 100 100 100 100 100 100 100 100 100 77];
 time1 = tic;
@@ -104,28 +104,28 @@ listOfTimers = timerfindall;
 if ~isempty(listOfTimers)
     delete(listOfTimers(:));
 end
-%}
+
 
 %% SN Test for Voltage Polling
 % This tests the voltage polling. The unreliability of XBee package
 % retrieval prevents this from being a reliable method of obtaining
 % voltages.
+%   1. Run test.m first, will wait to read package.
+%   2. Run SNGUI.m on another computer.
 
 %{
-clear
-clc
+SNNumber = 5;
 s = setupSerial('COM7');
-request_package = [86 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 63];
-timer = tic;
-while toc(timer) < 0.01
-    [~] = sendData(s,request_package);
+packages = zeros(SNNumber,2);
+voltages = zeros(SNNumber);
+voltList = zeros(SNNumber*2);
+for car=1:SNNumber
+    [packages(car,:)]=receiveData(s,2);
+    voltages(car,1)=bitshift(packages(car,1),8)+packages(car,2);
 end
-[package,data]=receiveData(s,2); 
-% Delete all timers from memory.
-    listOfTimers = timerfindall;
-    if ~isempty(listOfTimers)
-        delete(listOfTimers(:));
-    end
-%     voltages(car,1)=bitshift(packages(car,1),8)+packages(car,2); 
+[~,index]=sort(voltages);
+for i=1:SNNumber
+    voltList(i*2-1)=index;
+end
 fclose(s);
 %}

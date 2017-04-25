@@ -1,12 +1,14 @@
+function TrackingChevron_RealTime(vid)
+
 global outVector;
 pass = 0;
 counter = 0;
 CRNumber = 4;
 SNNumber = 5;
-while(~pass && counter < 20)
+while(~pass && counter < 10)
     %---------Setting up webcam--------------%
-    vid=webcam(2); %connect to webcam
-    vid.Resolution = '1024x768';
+    %vid=webcam(2); %connect to webcam
+    %vid.Resolution = '1024x768';
     samp1 = snapshot(vid); %take a photo
     pass = 1;
     sampInfo = regionprops(samp1); %find connected components
@@ -141,7 +143,8 @@ while(~pass && counter < 20)
     %         flushdata(vid);
 
         end
-       delete(vid);
+       %delete(vid);
        counter = counter+1;
     end
+end
 end
