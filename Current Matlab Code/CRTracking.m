@@ -76,6 +76,7 @@ end
 initX = outVector(i*4-2);
 initY = height - outVector(i*4-1);
 Theta = outVector(i*4);
+Theta = Theta*180/pi;
 CurrentLocation = [initX,initY];
 CurrentPose = [CurrentLocation Theta];
 %% Sensor Node
