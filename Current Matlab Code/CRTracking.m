@@ -61,8 +61,9 @@ throttle = 127; %max value, do not change
 slowdown = 0.85; %safety factor
 vmax = round(throttle*slowdown); %needs to be an int
 %arena size
-width = 130;
-height = 105;
+width = 143.5;
+height = 104.5;
+frontLen = 6; %cm
 %% Charging Robot
 for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerical order
     if outVector(i*4-3)==carID
@@ -73,10 +74,12 @@ for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerica
         return;
     end 
 end
-initX = outVector(i*4-2);
-initY = height - outVector(i*4-1);
+centX = outVector(i*4-2);
+centY = height - outVector(i*4-1);
 Theta = outVector(i*4);
-Theta = Theta*180/pi;
+Theta = Theta*pi/180;
+initX = centX + frontLen*cos(Theta);
+initY = centY + frontLen*sin(Theta);
 CurrentLocation = [initX,initY];
 CurrentPose = [CurrentLocation Theta];
 %% Sensor Node
@@ -95,9 +98,28 @@ for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerica
         return;
     end
 end
-finalX = outVector(i*4-2);
-finalY = outVector(i*4-1);
+fCentX = outVector(i*4-2);
+fCentY = height - outVector(i*4-1);
+fTheta = outVector(i*4)*pi/180;
+fTheta = fTheta*pi/180;
+finalX = fCentX + frontLen*cos(Theta);
+finalY = fCentY + frontLen*sin(Theta);
 Goal = [finalX,finalY];
+bodrad = 5;
+collrad = bodrad + 3;
+finCenter = [fCentX, fCentY];
+angs = 0:pi/10:2*pi;
+x = finCenter(1) + collRad*cos(angs);
+y = finCenter(2) + collRad*sin(angs);
+circArray = [x' y'];
+circ=plot(x,y,'k'); 
+for cc = 1:21
+    dist(cc) = norm(Goal-circArray(cc,:));
+end
+dist = dist'
+[minDist,rowInd] = min(dist);
+plot(circArray(rowInd,1),circArray(rowInd,2),'gx','MarkerSize',11);
+Goal = circArray(rowInd,:);
 
 distanceToGoal = norm(CurrentLocation - Goal);
 
