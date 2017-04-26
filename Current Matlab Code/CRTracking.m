@@ -1,11 +1,11 @@
-function [ pLeft, pRight ] = CRTracking( carID, t, simulation ) %#ok<INUSL>
+function [ pLeft, pRight ] = CRTracking( carID, timer, simulation ) %#ok<INUSL>
 % CRTRACKING Charging Robot Tracking
 %
-% [ PLEFT, PRIGHT ] = CRTracking( CARID, T, SIMULATION ) returns the
+% [ PLEFT, PRIGHT ] = CRTracking( CARID, TIMER, SIMULATION ) returns the
 % left and right wheel thrusts, VLEFT and VRIGHT, required for a particular
 %  car to track a target robot.
 % Assuming camera information is a global variable called outVector; CARID 
-% is the number for a charging robot, ie 9 to 12; T is the timer associated
+% is the number for a charging robot, ie 9 to 12; TIMER is associated
 % with CARID, and SIMULATION is an optional boolean stating whether the
 % simulation is requested.
 % CRTracking also assumes the main function contains a loop for all vehicles and a 
@@ -56,9 +56,9 @@ elseif nargin == 2
 end
 %% Parameters
 wheelDist = 3; %in cm
-goalRadius = 10; %in cm
+goalRadius = 7; %in cm
 throttle = 127; %max value, do not change
-slowdown = 0.85; %safety factor
+slowdown = 0.5; %safety factor
 vmax = round(throttle*slowdown); %needs to be an int
 %arena size
 width = 143.5;
@@ -100,25 +100,29 @@ for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerica
 end
 fCentX = outVector(i*4-2);
 fCentY = height - outVector(i*4-1);
-fTheta = outVector(i*4)*pi/180;
+fTheta = outVector(i*4);
 fTheta = fTheta*pi/180;
 finalX = fCentX + frontLen*cos(fTheta);
 finalY = fCentY + frontLen*sin(fTheta);
 Goal = [finalX,finalY];
 bodrad = 5;
-collrad = bodrad + 3;
+collRad = bodrad + 3;
 finCenter = [fCentX, fCentY];
 angs = 0:pi/10:2*pi;
 x = finCenter(1) + collRad*cos(angs);
 y = finCenter(2) + collRad*sin(angs);
 circArray = [x' y'];
-circ=plot(x,y,'k'); 
+if simulation
+    circ=plot(x,y,'k'); 
+end
 for cc = 1:21
     dist(cc) = norm(Goal-circArray(cc,:));
 end
-dist = dist'
+dist = dist';
 [minDist,rowInd] = min(dist);
-plot(circArray(rowInd,1),circArray(rowInd,2),'gx','MarkerSize',11);
+if simulation
+    plot(circArray(rowInd,1),circArray(rowInd,2),'gx','MarkerSize',11);
+end
 Goal = circArray(rowInd,:);
 
 distanceToGoal = norm(CurrentLocation - Goal);
@@ -146,29 +150,25 @@ if simulation
 end
 %% Alignment and Attachment Algorithm
 if (distanceToGoal <= goalRadius)
-    if CurrentPose(3) ~= SN_Pose(3)+pi %where is its end statement?
+    if CurrentPose(3) ~= fTheta+pi
         vLeft = round(-vmax);
-        vRight = round((SN_Pose(3)+pi-CurrentPose(3))*wheelDist/t + vLeft);
-    if vRight>127
-        vRight = 127;
-    end
-    pLeft = bitxor(vmax,128);
-    if vRight < 0
-        pRight = bitxor(round(abs(vRight)),128);
+        vRight = round((fTheta+pi-CurrentPose(3))*wheelDist/t + vLeft);
+    
+        if vRight>127
+            vRight = 127;
+        end
+        pLeft = bitxor(vmax,128);
+        if vRight < 0
+            pRight = bitxor(round(abs(vRight)),128);
+        else
+            pRight = vRight;
+        end
     else
-        pRight = vRight;
+        pLeft = 0;
+        pRight = 0;
+        vLeft = 0;
+        vRight = 0;
     end
-else
-    pLeft = 0;
-    pRight = 0;
-    vLeft = 0;
-    vRight = 0;
-end
-mov_package(6) =  pLeft;
-mov_package(7) = pRight;
-[~] = sendData(s,mov_package);
-pLeft=0; pRight=0;
-return;
 else
 %% Tracking Algorithm
     dx = Goal(1) - CurrentPose(1);

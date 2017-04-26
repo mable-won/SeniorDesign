@@ -5,7 +5,7 @@ pass = 0;
 counter = 0;
 CRNumber = 4;
 SNNumber = 5;
-while(~pass && counter < 10)
+while(~pass && counter < 15)
     %---------Setting up webcam--------------%
     %vid=webcam(2); %connect to webcam
     %vid.Resolution = '1024x768';
@@ -113,7 +113,7 @@ while(~pass && counter < 10)
                 numDots = bw3.NumObjects-1;
                 text(mean(data(:,1)),mean(data(:,2)),num2str(numDots),'color','b','fontsize',16);
                 %convert x&y coordinates from pixels to cm
-                outgoing(i,:)=[numDots,cent(1)*1024/143.5,cent(2)*768/104.5,orient];
+                outgoing(i,:)=[numDots,cent(1)/1024*143.5,cent(2)/768*104.5,orient];
 
                 %%%%%%%%%%%%%%%%%%%%%
                     hlen = ch(i).MajorAxisLength/2;

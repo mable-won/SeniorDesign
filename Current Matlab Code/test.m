@@ -53,10 +53,10 @@ delete(s);
 %% CR Test for Movement and Gripper (aka Pacman)
 % Test for 4 charging robots
 
-%{
-s = setupSerial('COM5');
+
+s = setupSerial('COM7');
 counter = 0;
-while(counter < 2)
+while(counter < 1)
     p1 = [71 0 0 0 0 0 0 0 0 82];
     p2 = [77 100 100 100 100 100 100 100 100 67];
     time1 = tic;
@@ -80,7 +80,7 @@ while(counter < 2)
 end
 fclose(s);
 delete(s);
-%}
+
 
 %% SN Test for Movement
 % Test for 5 sensor nodes
