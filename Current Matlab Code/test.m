@@ -85,7 +85,7 @@ delete(s);
 %% SN Test for Movement
 % Test for 5 sensor nodes
 
-
+%{
 s = setupSerial('COM5');
 p = [67 100 100 100 100 100 100 100 100 100 100 77];
 time1 = tic;
@@ -104,7 +104,7 @@ listOfTimers = timerfindall;
 if ~isempty(listOfTimers)
     delete(listOfTimers(:));
 end
-
+%}
 
 %% SN Test for Voltage Polling
 % This tests the voltage polling. The unreliability of XBee package
@@ -116,16 +116,15 @@ end
 %{
 SNNumber = 5;
 s = setupSerial('COM7');
-packages = zeros(SNNumber,2);
-voltages = zeros(SNNumber);
-voltList = zeros(SNNumber*2);
+voltages = zeros(1,SNNumber);
+voltList = zeros(1,SNNumber*2);
 for car=1:SNNumber
-    [packages(car,:)]=receiveData(s,2);
-    voltages(car,1)=bitshift(packages(car,1),8)+packages(car,2);
+    package=receiveData(s,2);
+    voltages(car) = bitshift(package(1),8)+package(2);
 end
 [~,index]=sort(voltages);
 for i=1:SNNumber
-    voltList(i*2-1)=index;
+    voltList(i*2-1)=index(i);
 end
 fclose(s);
 %}

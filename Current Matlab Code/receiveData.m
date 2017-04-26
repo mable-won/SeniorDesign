@@ -1,4 +1,4 @@
-function [package,data] = receiveData(s,dataLength)
+function [data] = receiveData(s,dataLength)
 % RECEIVEDATA Receive Data
 % 
 % [DATA] = receiveData(S,DATALENGTH) receives an API package sent over the xBee.
@@ -38,7 +38,6 @@ for i=1:dataLength
     data(i)=package(8+i);
 end
 flushinput(s);
-flushoutput(s);
 %address=package(6)+256*package(5);
 end
 

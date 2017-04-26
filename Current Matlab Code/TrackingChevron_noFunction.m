@@ -112,7 +112,7 @@ while(1)
                 numDots = bw3.NumObjects-1;
                 text(mean(data(:,1)),mean(data(:,2)),num2str(numDots),'color','b','fontsize',16);   
                 %convert x&y coordinates from pixels to cm
-                outgoing(i,:)=[numDots,cent(1)/7.877,cent(2)/7.314,orient]; 
+                outgoing(i,:)=[numDots,cent(1)*1024/143.5,cent(2)*768/104.5,orient]; 
 
                 %%%%%%%%%%%%%%%%%%%%%
                     hlen = ch(i).MajorAxisLength/2;

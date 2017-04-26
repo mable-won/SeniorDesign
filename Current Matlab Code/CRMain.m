@@ -8,7 +8,7 @@
 
 %% Global Variables
 global voltList;
-global outVector;
+global outVector; %#ok<NUSED>
 global mov_package;
 global grip_package;
 global SNNumber;

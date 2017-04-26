@@ -52,7 +52,7 @@ s=setupSerial('COM10');
 %for car = 1:SNNumber
 %    timer = tic;
 %    while toc(timer) < 0.01
-%        [~] = sendData(s,request_package,dec2hex(car));
+%        [~] = sendData(s,send_package,dec2hex(car));
 %    end
 %    % Delete all timers from memory.
 %    listOfTimers = timerfindall;
