@@ -56,14 +56,14 @@ elseif nargin == 2
 end
 %% Parameters
 wheelDist = 3; %in cm
-goalRadius = 7; %in cm
+goalRadius = 2; %in cm
 throttle = 127; %max value, do not change
-slowdown = 0.5; %safety factor
+slowdown = 0.45; %safety factor
 vmax = round(throttle*slowdown); %needs to be an int
 %arena size
 width = 143.5;
 height = 104.5;
-frontLen = 6; %cm
+frontLen = 5; %cm
 %% Charging Robot
 for i=1:SNNumber+CRNumber %used if camera array does not have robots in numerical order
     if outVector(i*4-3)==carID
@@ -105,6 +105,7 @@ fTheta = fTheta*pi/180;
 finalX = fCentX + frontLen*cos(fTheta);
 finalY = fCentY + frontLen*sin(fTheta);
 Goal = [finalX,finalY];
+%{
 bodrad = 5;
 collRad = bodrad + 3;
 finCenter = [fCentX, fCentY];
@@ -124,7 +125,7 @@ if simulation
     plot(circArray(rowInd,1),circArray(rowInd,2),'gx','MarkerSize',11);
 end
 Goal = circArray(rowInd,:);
-
+%}
 distanceToGoal = norm(CurrentLocation - Goal);
 
 %% Initialize robot simulator
