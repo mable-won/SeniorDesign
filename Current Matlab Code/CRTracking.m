@@ -14,6 +14,7 @@ function [ pLeft, pRight ] = CRTracking( carID, timer, simulation ) %#ok<INUSL>
 %
 % version 1.4 by M.C. Lalata and R. Dunn at the University of Houston on
 % 4/21/17
+
 %% Check inputs
 global outVector;
 global voltList;

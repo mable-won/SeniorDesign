@@ -1,7 +1,14 @@
-% works for four charging robots and four sensor nodes. initial locations for charging robots and sensor nodes are randomized.
-% current location and final location are constantly moving and are independent
-% current location is constantly finding final location for each iteration until current 
-% location is within a specified radius of of the final location. Does not take into account assignment algorithm
+%%Multiple Charging Robot Simulation
+%
+% This simulation works for four charging robots and four sensor nodes.
+% Initial locations for charging robots and sensor nodes are randomized.
+% Current location and final location are constantly moving and are
+% independent. Current location is constantly finding final location for
+% each iteration until current location is within a specified radius of 
+% the final location. Does not take into account assignment algorithm and
+% does not send data to robots.
+% 
+% version 1.0 by M.C. Lalata on 5/12/17
 
 %% Initialization
 
@@ -42,7 +49,7 @@ for fin = 1:4
     finalX(fin) = 5 + 85*rand;
     finalY(fin) = 5 + 85*rand;
 end
-Goal = [finalX,finalY]
+Goal = [finalX,finalY];
 % calculates distance between charging robot and sensor node. 
 % charging robot and sensor node are assigned to each other such that charging robot 1 -> sensor node 1, 
 % charging robot 2 -> sensor node 2,...
@@ -144,7 +151,7 @@ while ((distanceToGoal(1) > goalRadius) || (distanceToGoal(2) > goalRadius) || (
     % sensor nodes from the camera
     
     
-    CurrentPose = [CurrentLocation Theta]
+    CurrentPose = [CurrentLocation Theta];
     pause(0.6)
     delete(circ)
     delete(ang1)
@@ -182,7 +189,7 @@ while ((distanceToGoal(1) > goalRadius) || (distanceToGoal(2) > goalRadius) || (
         
         
        for len=1:4
-            distanceToGoal(len) = norm(CurrentPose(len,1:2) - Goal(len,:)) % this is necessary
+            distanceToGoal(len) = norm(CurrentPose(len,1:2) - Goal(len,:)); % this is necessary
        end
    
     
