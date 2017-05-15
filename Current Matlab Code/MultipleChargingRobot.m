@@ -1,24 +1,22 @@
-% initial location is at (0,0). current location and final location are 
-% constantly moving and are independent
-% current location is constantly following final location until current 
-% location is within a specified radius of of the final location
+% works for four charging robots and four sensor nodes. initial locations for charging robots and sensor nodes are randomized.
+% current location and final location are constantly moving and are independent
+% current location is constantly finding final location for each iteration until current 
+% location is within a specified radius of of the final location. Does not take into account assignment algorithm
 
 %% Initialization
 
 initX = zeros(4,1);
 initY = zeros(4,1);
 Theta = zeros(4,1);
-
 finalX = zeros(4,1);
 finalY = zeros(4,1);
-
 distanceToGoal = zeros(4,1);
 vLeft = zeros(4);
 vRight = zeros(4);
 circ = zeros(1,4);
 ang1 = zeros(1,4);
 ang2 = zeros(1,4);
-counter = 0
+
 %% Parameters
 rad = 5;
 mag = 8;
@@ -26,9 +24,11 @@ wheelDist = 5;
 goalRadius = 0.2;
 throttle = 127;
 slowdown = 0.6;
+counter = 0;
 t = 0.04; %time driving at these velocities
 vmax = throttle*slowdown;
 %% Charging Robots
+%initial location of four charging robots. randomized. all of them have one orientation
 for init=1:4
     initX(init) = 0;
     initY(init) = (rad*init) + 2*rad*(init-1);
@@ -37,11 +37,15 @@ end
 CurrentLocation = [initX,initY];
 CurrentPose = [CurrentLocation Theta];
 %% Sensor Node
+%initial location of four sensor nodes. randomized. for this program orientation of sensor nodes not important
 for fin = 1:4
     finalX(fin) = 5 + 85*rand;
     finalY(fin) = 5 + 85*rand;
 end
 Goal = [finalX,finalY]
+% calculates distance between charging robot and sensor node. 
+% charging robot and sensor node are assigned to each other such that charging robot 1 -> sensor node 1, 
+% charging robot 2 -> sensor node 2,...
 for dist=1:4
     distanceToGoal(dist) = norm(CurrentLocation(dist,:) - Goal(dist,:));
 end
@@ -51,8 +55,8 @@ hold on
 title('Charging Robots Movement Simulation');
 xlabel('X distance');
 ylabel('Y distance');
-xlim([-10 90])
-ylim([-10 90])
+xlim([-10 150])
+ylim([-10 100])
 angs = 0:pi/10:2*pi;
 for sim=1:4
     x = CurrentPose(sim,1) + rad*cos(angs);
@@ -116,7 +120,7 @@ while ((distanceToGoal(1) > goalRadius) || (distanceToGoal(2) > goalRadius) || (
             end
         
         end
-        
+        % update location calculation since no camera input
         vSum = vLeft(bot)+vRight(bot);
         vDiff = vRight(bot)-vLeft(bot);
         Theta(bot) = CurrentPose(bot,3) + vDiff*t/wheelDist;
@@ -141,7 +145,7 @@ while ((distanceToGoal(1) > goalRadius) || (distanceToGoal(2) > goalRadius) || (
     
     
     CurrentPose = [CurrentLocation Theta]
-    pause(0.8)
+    pause(0.6)
     delete(circ)
     delete(ang1)
     delete(ang2)
@@ -177,16 +181,11 @@ while ((distanceToGoal(1) > goalRadius) || (distanceToGoal(2) > goalRadius) || (
         end
         
         
-        
-        
-         
-    
-        
        for len=1:4
             distanceToGoal(len) = norm(CurrentPose(len,1:2) - Goal(len,:)) % this is necessary
        end
    
     
 end
-elapsedTime = toc
+
 
