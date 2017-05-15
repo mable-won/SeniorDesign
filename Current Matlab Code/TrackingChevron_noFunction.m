@@ -1,3 +1,12 @@
+%Tracking Chevron (no Function)
+%
+% This script continually takes snapshots from the overhead camera,
+% converts the image to black and white, filters out small white blobs,
+% and calculates the position, orientation, and number of dots for every ID
+% seen by the camera. These values are displayed on the processed image.
+%
+% version 1.0 by M. Wan at the University of Houston on 4/28/17
+
 global outVector;
 %pass = 0;
 %counter = 0;

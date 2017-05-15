@@ -58,7 +58,7 @@ Tx16Request tx = Tx16Request(0x1874, payload, sizeof(payload));
 TxStatusResponse txStatus = TxStatusResponse();
 
 // Vehicle ID: Change for each vehicle!!
-int carID = 9; //#s SNNumber+1 to SNNumber+CRNumber
+int carID = 6; //#s SNNumber+1 to SNNumber+CRNumber
 
 // Read buffer, bufferSize is 2+2*#ofcars
 int bufferSize = 2+2*CRNumber;
@@ -186,11 +186,11 @@ void sendData(int voltage) {
 }
 
 void openServo() {
-  servoMain.write(80);
+  servoMain.write(180);
 }
 
 void closeServo() {
-  servoMain.write(20);
+  servoMain.write(135);
 }
 
 void loop()

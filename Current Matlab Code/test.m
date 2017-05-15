@@ -1,62 +1,19 @@
 % TEST Collection of Tests to Run on Vehicles and Modules
 %
 % Uncomment the brackets to use one (and only one) test. Included in this
-% version is a test for the charging robot tracking, a test for the
-% charging robot movement and gripper, and a test for sensor nodes movement
-% and request voltage.
+% version is a test for the charging robot movement and gripper, a test
+% for sensor nodes movement and request voltage, a test for the camera
+% and the demo shown in our video.
 %
-% version 1.1 by R. Dunn at the University of Houston on 4/12/17
-
-%% Test for CRTracking
-% Do not use this test. Will be deleted in a later version.
-
-%{
-global voltList;
-global outVector;
-mov_package = [77 0 0 0 0 0 0 0 0 67];
-voltList = [1 9 2 10 3 11 4 12 5 0 6 0 7 0 8 0]; %define a test voltList
-s = setupSerial('COM5');
-for i=1:12 %define a test outVector
-    outVector(i*4-3)=i; %carID
-    outVector(i*4)=0; %orientation
-    if i<9
-        outVector(i*4-2)=0; %x-coordinate
-        outVector(i*4-1)=100/8*(i-0.5); %y-coordinate
-    else
-        outVector(i*4-2)=100; %x-coordinate
-        outVector(i*4-1)=100/4*(i-8.5); %y-coordinate  
-    end
-end
-counter = 0;
-vLeft = 0; vRight = 0;
-while((vLeft~=0 && vRight~=0) || counter==0)
-    for carID = 9:12 %for every charging robot
-        t = createCRTimer(carID);
-        % use if you don't want a simulation
-        [vLeft,vRight] = CRTracking(carID, t);
-        % use if you want the simulation
-        %[vLeft,vRight] = CRTracking(carID, t, 1);
-        mov_package((carID-8)*2) = vLeft;
-        mov_package((carID-8)*2+1) = vRight;
-        UpdateLocation(vLeft,vRight,carID);
-    end
-    %disp(mov_package);
-    [~] = sendData(s,mov_package);
-    counter = counter + 1;
-    pause(0.1);
-end
-[~] = sendData(s,[77 0 0 0 0 0 0 0 0 67]);
-fclose(s);
-delete(s);
-%}
+% version 1.2 by R. Dunn at the University of Houston on 5/12/17
 
 %% CR Test for Movement and Gripper (aka Pacman)
 % Test for 4 charging robots
 
-
+%{
 s = setupSerial('COM7');
 counter = 0;
-while(counter < 1)
+while(counter < 10)
     p1 = [71 0 0 0 0 0 0 0 0 82];
     p2 = [77 100 100 100 100 100 100 100 100 67];
     time1 = tic;
@@ -67,7 +24,7 @@ while(counter < 1)
     p1 = [77 0 0 0 0 0 0 0 0 67];
     p2 = [71 1 1 1 1 0 0 0 0 82];
     time2 = tic;
-    while (toc(time2) < 0.2)
+    while (toc(time2) < 0.3)
         [~] = sendData(s,p1);
         [~] = sendData(s,p2);
     end
@@ -80,13 +37,13 @@ while(counter < 1)
 end
 fclose(s);
 delete(s);
-
+%}
 
 %% SN Test for Movement
 % Test for 5 sensor nodes
 
 %{
-s = setupSerial('COM5');
+s = setupSerial('COM7');
 p = [67 100 100 100 100 100 100 100 100 100 100 77];
 time1 = tic;
 while (toc(time1) < 0.34)
@@ -127,4 +84,75 @@ for i=1:SNNumber
     voltList(i*2-1)=index(i);
 end
 fclose(s);
+%}
+
+%% Senior Design Demo
+% This demo moves four charging robots forward a specified set of distances
+% before latching onto four sensor nodes. Sensor nodes must be aligned with
+% charging robots. This demo doesn't use the overhead camera, so that the
+% video could be taken, but this demo can easily be rewritten to include
+% the camera information.
+
+%{
+s = setupSerial('COM7');
+
+CRNumber = 4;
+SNNumber = 5;
+
+mov_package = [77 0 0 0 0 0 0 0 0 67];
+grip_package = [71 0 0 0 0 0 0 0 0 82];
+distances = [18 12 37 26]; %in cm
+threshhold = 0.6; %in cm
+speed = 14; %cm/s
+time = 0.1; %in s
+counter = 0; %dummy counter, will be replaced
+while (counter < 50) %to be replaced by get(hObject,'Value')
+    if counter==1
+        elapsedtime=tic;
+    elseif counter==2
+         time=toc(elapsedtime);
+    end
+    for carID = SNNumber+1:SNNumber+CRNumber
+        if distances(carID-SNNumber)>threshhold
+            vLeft = 100;
+            vRight = 100;
+            gripper = 1;
+            distances(carID-SNNumber)=distances(carID-SNNumber)-time*speed;
+        else
+            vLeft = 0;
+            vRight = 0;
+            gripper = 0;
+        end
+        mov_package((carID-SNNumber)*2) = vLeft;
+        mov_package((carID-SNNumber)*2+1) = vRight;
+        grip_package((carID-SNNumber+1)) = gripper;
+    end
+    t=tic;
+    while toc(t)<0.1
+        [~]=sendData(s,mov_package);
+        [~]=sendData(s,grip_package);
+    end
+    % Delete all timers from memory.
+    listOfTimers = timerfindall;
+    if ~isempty(listOfTimers)
+        delete(listOfTimers(:));
+    end
+    counter = counter + 1; %counter will be removed in a later version
+end
+for index = 2:2*CRNumber+1
+     mov_package(index) = 0; %stop
+     %grip_package(index) = 1; %open
+end
+t=tic;
+while toc(t)<0.1
+    sendData(s,mov_package);
+    %sendData(s,grip_package);
+end
+fclose(s);
+delete(s);
+% Delete all timers from memory.
+listOfTimers = timerfindall;
+if ~isempty(listOfTimers)
+    delete(listOfTimers(:));
+end
 %}

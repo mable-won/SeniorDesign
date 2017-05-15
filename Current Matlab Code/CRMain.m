@@ -1,7 +1,8 @@
 %CRMAIN Charging Robot Main
 %
 % CRMain controls all charging robot functions, including assignment, 
-% tracking, alignment, attachment, and charging.
+% tracking, alignment, attachment, and charging. Tracking, alignment, and
+% timers not completely functional.
 %
 % version 0.2 by R. Dunn, M.C. Lalata, and M. Wan at the University of
 % Houston on 4/18/17
@@ -13,7 +14,6 @@ global mov_package;
 global grip_package;
 global SNNumber;
 global CRNumber;
-%global collision; %#ok<NUSED>
 SNNumber = 5;
 CRNumber = 4;
 
@@ -34,7 +34,7 @@ s = setupSerial('COM7');
 for i = 1:SNNumber %use if voltage polling doesn't work
     voltList(i*2-1) = i;
 end
-%for car=1:SNNumber %use if voltage polling works
+%for car=1:SNNumber %use if voltage polling works which it doesn't reliably
 %    [packages(car,:)]=receiveData(s,2);
 %    voltages(car,1)=bitshift(packages(car,1),8)+packages(car,2);
 %end
@@ -59,7 +59,7 @@ CRTargetInit;
 
 %% Main Loop
 counter = 0; %dummy counter, will be replaced
-while (counter < 20) %to be replaced by get(hObject,'Value')
+while (counter < 20) %to be replaced by get(hObject,'Value') when using CRGUI
     mov_package(1) = 77; mov_package(2*CRNumber+2) = 67;
     grip_package(1) = 71; grip_package(2*CRNumber+2) = 82;
     for index = 2:2*CRNumber+1

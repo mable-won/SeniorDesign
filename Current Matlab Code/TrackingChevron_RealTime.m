@@ -1,4 +1,26 @@
 function TrackingChevron_RealTime(vid)
+%TRACKINGCHEVRON_REALTIME Tracking Chevron in Real Time
+%
+% TrackingChevron_RealTime(vid) takes a snapshot from a preset vid (works
+% best at '1024x768' resolution). The function then calculates the carID, x
+% and y position in cm and orientation in degrees for all vehicles. Before
+% updating outVector, the array must have each carID represented only once
+% for a one-to-one correspondence. If this condition is not met, the camera
+% takes a new picture and processes again until the one-to-one condition is
+% met or it has looped for a maximum of 15 times.
+%
+% Example:
+% global outVector;
+% vid = webcam(2);
+% vid.Resolution = '1024x768';
+% counter = 0;
+% while (counter < 10)
+%     TrackingChevron_RealTime(vid);
+%     counter = counter + 1;
+% end
+% delete(vid);
+%
+% version 1.0 by M. Wan and R. Dunn at the University of Houston on 4/28/17
 
 global outVector;
 pass = 0;

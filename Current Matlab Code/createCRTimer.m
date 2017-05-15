@@ -4,7 +4,9 @@ function [t] = createCRTimer(carID,time)
 % [T] = createCRTimer(CARID, TIME) creates a timer T associated with a
 % given ID of a charging robot, CARID, which is saved under T.UserData.
 % TIME is an optional time in seconds to set on the timer. Default is 60 s.
-% Note that this does not start the timer, but merely sets it.
+% Note that this does not start the timer, but merely sets it. Note that
+% there is a warning issued when running multiple timers in CRMain. We
+% never found a way to bypass the warning.
 %
 % Examples
 %

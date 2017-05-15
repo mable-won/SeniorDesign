@@ -6,32 +6,33 @@ function [assignment,cost] = munkres(costMat)
 % COSTMAT, where the (i,j)th element represents the cost to assign the jth
 % job to the ith worker.
 %
-
+%
 % This is vectorized implementation of the algorithm. It is the fastest
 % among all Matlab implementations of the algorithm.
-
+%
 % Examples
 % Example 1: a 5 x 5 example
-%{
-[assignment,cost] = munkres(magic(5));
-[assignedrows,dum]=find(assignment);
-disp(assignedrows'); % 3 2 1 5 4
-disp(cost); %15
-%}
+%
+%[assignment,cost] = munkres(magic(5));
+%[assignedrows,dum]=find(assignment);
+%disp(assignedrows'); % 3 2 1 5 4
+%disp(cost); %15
+%
 % Example 2: 400 x 400 random data
-%{
-n=400;
-A=rand(n);
-tic
-[a,b]=munkres(A);
-toc                 % about 6 seconds 
-%}
-
+%
+%n=400;
+%A=rand(n);
+%tic
+%[a,b]=munkres(A);
+%toc                 % about 6 seconds 
+%
+%
 % Reference:
 % "Munkres' Assignment Algorithm, Modified for Rectangular Matrices", 
 % http://csclab.murraystate.edu/bob.pilgrim/445/munkres.html
-
+%
 % version 1.0 by Yi Cao at Cranfield University on 17th June 2008
+% Referenced by CRTargetInit.m
 
 assignment = false(size(costMat));
 cost = 0;
